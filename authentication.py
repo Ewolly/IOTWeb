@@ -1,26 +1,30 @@
+from flask import Blueprint, current_app
+from flask import redirect, request, g
 from oauth2client.client import OAuth2WebServerFlow
-import webbrowser
-from oauth2client.file import Storage
-import httplib2
 
-flow = OAuth2WebServerFlow(
-    client_id='.com',
-    client_secret='',
-    redirect_uri='http://iot.duality.co.nz/oauth2callback',
-    scope='email',
-    user_agent='my-sample/1.0')
+oauth2 = Blueprint('oauth2', __name__)
 
+def get_flow():
+    flow = getattr(g, '_flow', None)
+    if flow is None:
+        flow = g._flow = OAuth2WebServerFlow(
+            client_id=current_app.config['CLIENT_ID'],
+            client_secret=current_app.config['CLIENT_SECRET'],
+            redirect_uri=current_app.config['CLIENT_REDIRECT_URI'],
+            scope='email',
+            user_agent='my-sample/1.0')
+    return flow
 
-authorize_url = flow.step1_get_authorize_url()
-webbrowser.open(authorize_url, new=2)
+@oauth2.route('/login')
+def begin_auth():
+    authorize_url = get_flow().step1_get_authorize_url()
+    return redirect(authorize_url)
 
-credentials = flow.step2_exchange(raw_input("code: "))
-storage = Storage('credentials')
-storage.put(credentials)
+@oauth2.route('/oauth2callback')
+def handle_oauth2_callback():
+    code = request.args.get('code', None)
+    if code is None:
+        return 'Failure to authenticate. No code received.'
 
-credentials = storage.get()
-
-http = httplib2.Http()
-http = credentials.authorize(http)
-
-print http
+    credentials = get_flow().step2_exchange(code)
+    return 'Email address: %s' % credentials.id_token['email']
