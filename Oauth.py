@@ -4,6 +4,8 @@ from oauth2client.file import Storage
 import httplib2
 
 flow = OAuth2WebServerFlow(
+    client_id='.com',
+    client_secret='',
     redirect_uri='http://iot.duality.co.nz/oauth2callback',
     scope='email',
     user_agent='my-sample/1.0')
