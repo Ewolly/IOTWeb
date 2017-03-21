@@ -47,11 +47,8 @@ def validate_login(email, password):
     if user == None:
         return redirect('/user-not-found')
     elif user.password == hashed_password:
-        session[email] = request.form['email']
+        session['email'] = request.email
         return redirect('/devices')
     else:
         return redirect('/password-incorrect')
-
-app.secret_key = Aurrent_app.config['SECRET_KEY']
-
 
