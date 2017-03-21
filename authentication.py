@@ -47,7 +47,7 @@ def validate_login(email, password):
     if user == None:
         return redirect('/user-not-found')
     elif user.password == hashed_password:
-        session['email'] = request.email
+        session['email'] = email
         return redirect('/devices')
     else:
         return redirect('/password-incorrect')
