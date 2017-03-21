@@ -1,10 +1,14 @@
 from flask import Blueprint, current_app
 from flask import redirect, request, g, render_template
+from flask import Flask, session, redirect, url_for, escape
 from oauth2client.client import OAuth2WebServerFlow
 from hashlib import sha512
 from db import Users
+import os
 
 oauth2 = Blueprint('oauth2', __name__)
+
+app = Flask(__name__)
 
 def get_flow():
     flow = getattr(g, '_flow', None)
@@ -43,9 +47,11 @@ def validate_login(email, password):
     if user == None:
         return redirect('/user-not-found')
     elif user.password == hashed_password:
-        return make_session(email)
+        session[email] = request.form['email']
+        return redirect('/devices')
     else:
         return redirect('/password-incorrect')
 
-def make_session(email):
-    return "Hunter is lazy."
+app.secret_key = Aurrent_app.config['SECRET_KEY']
+
+
