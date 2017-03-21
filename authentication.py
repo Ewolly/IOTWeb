@@ -1,6 +1,8 @@
 from flask import Blueprint, current_app
-from flask import redirect, request, g
+from flask import redirect, request, g, render_template
 from oauth2client.client import OAuth2WebServerFlow
+import hashlib
+from db import users
 
 oauth2 = Blueprint('oauth2', __name__)
 
@@ -29,7 +31,22 @@ def handle_oauth2_callback():
     credentials = get_flow().step2_exchange(code)
     return 'Email address: %s' % credentials.id_token['email']
 
-@oauth2.route('/login')
+@oauth2.route('/login', methods = ['GET','POST'])
 def login_request():
     if request.method == 'GET':
         return render_template('login.html')
+
+    return validate_login(request.form['email'], request.form['password'])
+
+def validate_login(email, password):
+    hashed_password = hashlib.sha512(password).hexdigest()
+    user = users.query.filter_by(email = email).first()
+    if user == None:
+        return redirect('/user-not-found')
+    elif user.password == hashed_password:
+        return make_session(email)
+    else:
+        return redirect('/password-incorrect')
+
+def make_session(email):
+    return "Hunter is lazy."
