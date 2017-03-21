@@ -15,7 +15,7 @@ def get_flow():
             user_agent='my-sample/1.0')
     return flow
 
-@oauth2.route('/login')
+@oauth2.route('/google-login')
 def begin_auth():
     authorize_url = get_flow().step1_get_authorize_url()
     return redirect(authorize_url)
@@ -28,3 +28,8 @@ def handle_oauth2_callback():
 
     credentials = get_flow().step2_exchange(code)
     return 'Email address: %s' % credentials.id_token['email']
+
+@oauth2.route('/login')
+def login_request():
+    if request.method == 'GET':
+        return render_template('login.html')
