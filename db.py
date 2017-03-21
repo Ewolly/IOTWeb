@@ -15,9 +15,9 @@ class Users(db.Model):
     user_id = db.Column(db.Integer, primary_key=True)
     email = db.Column(db.String(254), unique=True)
     password = db.Column(db.String(128))
-    devices = db.relationship('devices', backref='user',
+    devices = db.relationship('Devices', backref='user',
         lazy='dynamic')
-    clients = db.relationship('clients', backref='user',
+    clients = db.relationship('Clients', backref='user',
         lazy='dynamic')
 
     def __init__(self, email, password):
@@ -26,16 +26,16 @@ class Users(db.Model):
 
 class Clients(db.Model):
     client_id = db.Column(db.Integer, primary_key=True)
-    user_id = db.Column(db.Integer)
+    user_id = db.Column(db.Integer, db.ForeignKey('users.user_id'))
     ip_address = db.Column(pg.INET)
     port = db.Column(db.Integer)
-    mac_address = db.Column(postgresql.MACADDR)
+    mac_address = db.Column(pg.MACADDR)
     friendly_name = db.Column(db.String(15))
     past_ips = db.Column(pg.ARRAY(pg.INET))
-    first_connected = db.Column(db.datetime)
-    last_connected = db.Column(db.datetime)
+    first_connected = db.Column(db.DateTime)
+    last_connected = db.Column(db.DateTime)
 
-    devices = db.relationship('devices', backref='client',
+    devices = db.relationship('Devices', backref='client',
         lazy='dynamic')
 
     def __init__(self, user_id, ip_address, port, mac_address,
@@ -55,8 +55,8 @@ class Devices(db.Model):
     friendly_name = db.Column(db.String(20))
     ip_address = db.Column(pg.INET)
     port = db.Column(db.Integer)
-    first_connected = db.Column(db.datetime)
-    last_checked = db.Column(db.datetime)
+    first_connected = db.Column(db.DateTime)
+    last_checked = db.Column(db.DateTime)
     past_clients = db.Column(pg.ARRAY(db.Integer))
 
     def __init__(self, user_id, module, ip_address, port, 

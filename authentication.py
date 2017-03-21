@@ -2,7 +2,7 @@ from flask import Blueprint, current_app
 from flask import redirect, request, g, render_template
 from oauth2client.client import OAuth2WebServerFlow
 from hashlib import sha512
-from db import users
+from db import Users
 
 oauth2 = Blueprint('oauth2', __name__)
 

@@ -5,11 +5,11 @@ from werkzeug.contrib.fixers import ProxyFix
 from db import init_app
 
 app = Flask(__name__, instance_relative_config=True)
-init_app(app)
 app.config.from_pyfile('config.py')
 app.register_blueprint(oauth2)
 app.wsgi_app = ProxyFix(app.wsgi_app)
 
+init_app(app)
 
 @app.route('/')
 @app.route('/<title>')
