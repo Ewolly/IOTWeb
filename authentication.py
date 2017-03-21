@@ -52,3 +52,6 @@ def validate_login(email, password):
     else:
         return redirect('/password-incorrect')
 
+@oauth2.route('/devices')
+def deviecs():
+    return session
