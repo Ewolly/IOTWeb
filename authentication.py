@@ -47,12 +47,8 @@ def validate_login(email, password):
     if user == None:
         return redirect('/user-not-found')
     elif user.password == hashed_password:
-        with current_app.app_context():
-            session['email'] = email
+        session['email'] = email
+        session['id'] = user.user_id
         return redirect('/devices')
     else:
         return redirect('/password-incorrect')
-
-@oauth2.route('/devices')
-def deviecs():
-    return session['email']
