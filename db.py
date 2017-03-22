@@ -28,7 +28,7 @@ class Users(db.Model):
     def __init__(self, email, password):
         self.email = email
         self.password = sha512(password).hexdigest()
-        self.creation_time = self.last_accessed = datetime.utc()
+        self.creation_time = self.last_accessed = datetime.utcnow()
 
 class Clients(db.Model):
     client_id = db.Column(db.Integer, primary_key=True)
