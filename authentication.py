@@ -68,7 +68,7 @@ def sign_up():
     if request.form['password'] != request.form['password_check']:
         return 'passwords do not match'
     if request.form['terms'] != True:
-        return 'you failed to accept the t&cs'\
+        return 'you failed to accept the t&cs'
     emails = [e.lower() for e in Users.query.with_entities(Users.email)]
     if email in emails:
         return 'sorry this email is already in use'
