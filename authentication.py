@@ -44,7 +44,7 @@ def validate_login(email, password):
         session['id'] = user.user_id
         flash('Welcome, %s.' % email, 'info')
         return redirect('/devices')
-    return redirect(url_for('login_request'), 303)
+    return redirect(url_for('auth.login_request'), 303)
 
 @auth.route('/sign-up', methods=['GET','POST'])
 def sign_up():
@@ -71,7 +71,7 @@ def sign_up():
         flash('Please accept the Terms and Conditions.', 'error')
     elif Users.query.filter(func.lower(Users.email) == email.lower()).first() is None:
         flash('This account already exists.', 'info')
-        return redirect(url_for('login_request'), 303)
+        return redirect(url_for('auth.login_request'), 303)
     else:
         new_user = Users(email, request.form['password'])
         add_to_db(new_user)
@@ -81,4 +81,4 @@ def sign_up():
         session['email'] = email
         session['id'] = user.user_id
         return redirect('/devices', 303)
-    return redirect(url_for('sign_up'), 303)
+    return redirect(url_for('auth.sign_up'), 303)

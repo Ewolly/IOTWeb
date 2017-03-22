@@ -17,7 +17,7 @@
         {% for category, message in messages %}
             <div class="flash flash-{{ category }}">
               {{ message }}
-              <span id='close' onclick='this.parentNode.parentNode.parentNode.removeChild(this.parentNode.parentNode); return false;'>
+              <span id='close' onclick='this.parentNode.parentNode.removeChild(this.parentNode); return false;'>
                 <i class="fa fa-times" aria-hidden="true"></i>
               </span>
             </div>

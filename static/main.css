@@ -1,7 +1,7 @@
 div.flash {
 	width: 90%;
     background: #1f8dd6;
-    margin: 1em 0;
+    margin: 1em auto;
     padding: 0.3em 1em;
     color: white;
     border-radius: 5px;
