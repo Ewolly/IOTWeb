@@ -17,9 +17,7 @@
         {% for category, message in messages %}
             <div class="flash flash-{{ category }}">
               <span class="flash-message">{{ message }}</span>
-              <span id='close' onclick='this.parentNode.parentNode.removeChild(this.parentNode); return false;'>
-                <i class="fa fa-times flash-close" aria-hidden="true"></i>
-              </span>
+              <i class="fa fa-times flash-close" aria-hidden="true" onclick='this.parentNode.parentNode.removeChild(this.parentNode); return false;'></i>
             </div>
           {% endfor %}
        {% endif %}
