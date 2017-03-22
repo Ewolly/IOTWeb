@@ -8,6 +8,14 @@ div.flash {
     text-shadow: 0 1px 1px rgba(0, 0, 0, 0.2);
 }
 
+span.flash-message {
+	float: left;
+}
+
+i.flash-close {
+	float: right;
+}
+
 .flash-info {
 	background: #1f8dd6;
 }
