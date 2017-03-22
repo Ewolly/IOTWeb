@@ -74,6 +74,8 @@ def sign_up():
         return 'sorry this email is already in use'
     new_user = Users(email, request.form['password'],
         request.remote_addr)
+    db.session.add(new_user)
+    db.session.commit()
     return redirect('/devices')
 
 
