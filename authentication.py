@@ -67,13 +67,14 @@ def sign_up():
         return 'Password too short.'
     if request.form['password'] != request.form['password_check']:
         return 'passwords do not match'
-    if request.form['terms'] != True:
+    if not request.form.get('terms'):
         return 'you failed to accept the t&cs'
     emails = [e.lower() for e in Users.query.with_entities(Users.email)]
     if email in emails:
         return 'sorry this email is already in use'
     new_user = Users(email, request.form['password'],
         request.remote_addr)
+    return redirect('/devices')
 
 
 
