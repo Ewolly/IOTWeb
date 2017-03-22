@@ -1,0 +1,21 @@
+div.flash {
+	width: 90%;
+    background: #1f8dd6;
+    margin: 1em 0;
+    padding: 0.3em 1em;
+    color: white;
+    border-radius: 5px;
+    text-shadow: 0 1px 1px rgba(0, 0, 0, 0.2);
+}
+
+.flash-info {
+	background: #1f8dd6;
+}
+
+.flash-success {
+	background: rgb(28, 184, 65);
+}
+
+.flash-error {
+	background: rgb(202, 60, 60);
+}

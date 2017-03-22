@@ -1,12 +1,12 @@
 from __future__ import print_function
 from flask import Flask, render_template
-from authentication import oauth2
+from authentication import auth
 from werkzeug.contrib.fixers import ProxyFix
 from db import init_app
 
 app = Flask(__name__, instance_relative_config=True)
 app.config.from_pyfile('config.py')
-app.register_blueprint(oauth2)
+app.register_blueprint(auth)
 app.wsgi_app = ProxyFix(app.wsgi_app)
 
 init_app(app)
