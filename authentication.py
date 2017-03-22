@@ -32,7 +32,7 @@ def login_request():
 
 def validate_login(email, password):
     email = email.strip()
-    hashed_password = sha512(password).hexdigest()
+    hashed_password = sha512(password+email).hexdigest()
     user = Users.query.filter(func.lower(Users.email) == email.lower()).first()
     
     if user == None:
