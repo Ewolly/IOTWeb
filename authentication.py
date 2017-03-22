@@ -72,8 +72,7 @@ def sign_up():
     emails = Users.query.with_entities(Users.email)
     if email in emails:
         return 'sorry this email is already in use'
-    new_user = Users(email, request.form['password'],
-        request.remote_addr)
+    new_user = Users(email, request.form['password'])
     add_to_db(new_user)
     update_db()
     return redirect('/devices')

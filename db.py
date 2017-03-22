@@ -15,7 +15,6 @@ class Users(db.Model):
     user_id = db.Column(db.Integer, primary_key=True)
     email = db.Column(db.String(254), unique=True)
     password = db.Column(db.String(128))
-    past_ips = db.Column(pg.ARRAY(pg.INET))
     nonce = db.Column(db.String(8))
     creation_time = db.Column(db.DateTime)
     last_accessed = db.Column(db.DateTime)
@@ -29,7 +28,6 @@ class Users(db.Model):
     def __init__(self, email, password, ip_address):
         self.email = email
         self.password = sha512(password).hexdigest()
-        self.past_ips = [ip_address]
 
 class Clients(db.Model):
     client_id = db.Column(db.Integer, primary_key=True)
