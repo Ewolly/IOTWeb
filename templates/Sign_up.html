@@ -2,22 +2,36 @@
 <html lang="en">
 	<head>
 		<meta charset="utf-8">
-		<title>IoTBox Login</title>
+		<title>IoTBox Sign up</title>
 	</head>
 
 	<body>
-		<h1>IoTBox</h1>
+		<h1>IoTBox account creation</h1>
 		<form action="/login" method="post">
 			<div>
-				<label for="email">Email:</label>
+				<label for="email">Please enter your email:</label>
 				<input type="text" id="email" name="email">
 			</div>
 			<div>
-				<label for="password">Password:</label>
+				<label for="email">Please re-enter your email:</label>
+				<input type="text" id="email_check" name="email_check">
+			</div>
+			<div>
+				<label for="password">Please enter your password (atleast 8 characters):</label>
 				<input type="password" id="password" name="password">
 			</div>
 			<div>
-				<button type="submit">Login</button>
+				<label for="password">Please re-enter you password:</label>
+				<input type="password" id="password_check" name="password_check">
+			</div>
+			<div>
+			<label> Terms and conditions: Dont use this site for hacking peoples toasters</label>
+			</div>
+			<div>
+			<input type="checkbox" name="terms" value=True>Yes I agree.
+			</div>
+			<div>
+				<button type="submit">Sign up!</button>
 			</div>
 		</form>
 	</body>
