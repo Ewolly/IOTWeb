@@ -5,6 +5,7 @@ from oauth2client.client import OAuth2WebServerFlow
 from hashlib import sha512
 from db import Users
 import os
+import re
 
 oauth2 = Blueprint('oauth2', __name__)
 
@@ -52,3 +53,27 @@ def validate_login(email, password):
         return redirect('/devices')
     else:
         return redirect('/password-incorrect')
+
+@oauth2.route('/sign-up', methods=['GET','POST'])
+def sign_up():
+    if request.method == 'GET':
+        return render_template('sign_up.html')
+    email = request.form['email']
+    email = email.strip()
+    email = email.lower()
+    if re.match(r"[^@]+@[^@]+", email) is not None:
+        return 'Invalid Email'
+    if len(request.form['password']) < 8:
+        return 'Password too short.'
+    if request.form['password'] != request.form['password_check']:
+        return 'passwords do not match'
+    if request.form['terms'] != True:
+        return 'you failed to accept the t&cs'\
+    emails = [email.lower() for email in Users.query.with_entities(Users.email)]
+    if email in emails:
+        return 'sorry this email is already in use'
+    new_user = Users(email, request.form['password'],
+        request.remote_addr)
+
+
+
