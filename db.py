@@ -25,7 +25,7 @@ class Users(db.Model):
     clients = db.relationship('Clients', backref='user',
         lazy='dynamic')
 
-    def __init__(self, email, password, ip_address):
+    def __init__(self, email, password):
         self.email = email
         self.password = sha512(password).hexdigest()
 
