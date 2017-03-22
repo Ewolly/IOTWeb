@@ -1,7 +1,5 @@
-from flask import Blueprint, current_app
-from flask import redirect, request, g, render_template, flash, \
-    session, redirect, url_for, make_response
-from oauth2client.client import OAuth2WebServerFlow
+from flask import Blueprint
+from flask import redirect, request, render_template, flash, session, url_for
 from hashlib import sha512
 from sqlalchemy import func
 from db import Users, add_to_db, update_db
@@ -9,20 +7,6 @@ import os
 import re
 
 auth = Blueprint('auth', __name__)
-
-@auth.route('/google-login')
-def begin_auth():
-    authorize_url = get_flow().step1_get_authorize_url()
-    return redirect(authorize_url)
-
-@auth.route('/login-callback')
-def handle_oauth2_callback():
-    code = request.args.get('code', None)
-    if code is None:
-        return 'Failure to authenticate. No code received.'
-
-    credentials = get_flow().step2_exchange(code)
-    return 'Email address: %s' % credentials.id_token['email']
 
 @auth.route('/login', methods=['GET','POST'])
 def login_request():
