@@ -1,0 +1,17 @@
+<!doctype html>
+  <html lang="en">
+    <head>
+    {% block head %}
+      <meta charset="utf-8">
+      <meta name="viewport" content="width=device-width, initial-scale=1.0">
+
+      <title>{% block title %}{% endblock %} - IOTBox</title>
+      <link rel="stylesheet" href="https://unpkg.com/purecss@0.6.2/build/pure-min.css" integrity="sha384-UQiGfs9ICog+LwheBSRCt1o5cbyKIHbwjWscjemyBMT9YCUMZffs6UqUTd0hObXD" crossorigin="anonymous">
+      <link rel="stylesheet" href="{{ url_for('static', filename='main.css') }}"
+    </head>    
+    {% endblock %}
+</head>
+<body>
+    <div id="content">{% block content %}{% endblock %}</div>
+</body>
+</html>
