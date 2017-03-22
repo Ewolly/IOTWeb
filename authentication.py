@@ -69,7 +69,7 @@ def sign_up():
         flash('The entered passwords do not match.', 'error')
     elif not request.form.get('terms'):
         flash('Please accept the Terms and Conditions.', 'error')
-    elif Users.query.filter(func.lower(Users.email) == email.lower()).first() is None:
+    elif Users.query.filter(func.lower(Users.email) == email.lower()).first() is not None:
         flash('This account already exists.', 'info')
         return redirect(url_for('auth.login_request'), 303)
     else:
