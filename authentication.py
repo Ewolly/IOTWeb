@@ -61,7 +61,7 @@ def sign_up():
     email = request.form['email']
     email = email.strip()
     email = email.lower()
-    if re.match(r"[^@]+@[^@]+", email) is not None:
+    if re.match(r"[^@]+@[^@]+", email) is None:
         return 'Invalid Email'
     if len(request.form['password']) < 8:
         return 'Password too short.'
