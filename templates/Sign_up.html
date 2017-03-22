@@ -1,38 +1,28 @@
-<!doctype html>
-<html lang="en">
-	<head>
-		<meta charset="utf-8">
-		<title>IoTBox Sign up</title>
-	</head>
-
-	<body>
-		<h1>IoTBox account creation</h1>
-		<form action="/login" method="post">
-			<div>
-				<label for="email">Please enter your email:</label>
-				<input type="text" id="email" name="email">
-			</div>
-			<div>
-				<label for="email">Please re-enter your email:</label>
-				<input type="text" id="email_check" name="email_check">
-			</div>
-			<div>
-				<label for="password">Please enter your password (atleast 8 characters):</label>
-				<input type="password" id="password" name="password">
-			</div>
-			<div>
-				<label for="password">Please re-enter you password:</label>
-				<input type="password" id="password_check" name="password_check">
-			</div>
-			<div>
-			<label> Terms and conditions: Dont use this site for hacking peoples toasters</label>
-			</div>
-			<div>
-			<input type="checkbox" name="terms" value=True>Yes I agree.
-			</div>
-			<div>
-				<button type="submit">Sign up!</button>
-			</div>
-		</form>
-	</body>
-</html>
+{% extends "base.html" %}
+{% block title %}Sign up{% endblock %}
+{% block content %}
+  <h1>Account Creation</h1>
+  <form class="pure-form pure-form-aligned" method="post">
+    <fieldset>
+      <div class="pure-control-group">
+        <label for="email">Email:</label>
+        <input type="text" id="email" name="email">
+      </div>
+      <div class="pure-control-group">
+        <label for="email">Password (8 character minimum):</label>
+        <input type="text" id="password" name="password">
+      </div>
+      <div class="pure-control-group">
+        <label for="password">Please re-enter your password:</label>
+        <input type="password" id="password_check" name="password_check">
+      </div>
+ 	  <label for="terms" class="pure-checkbox">
+        <input id="terms" type="checkbox" value="True">
+        I agree
+    </label>
+      <div class="pure-controls">
+        <button type="submit" class="pure-button pure-button-primary">Submit</button>
+      </div>
+    </fieldset>
+  </form>
+{% endblock %}
