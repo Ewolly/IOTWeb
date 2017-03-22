@@ -73,3 +73,10 @@ class Devices(db.Model):
         self.ip_address = ip_address
         self.port = port
         self.friendly_name = friendly_name
+
+
+def add_to_db(db_object):
+    db.session.add(db_object)
+
+def update_db():
+    db.session.commit()

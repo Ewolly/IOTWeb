@@ -3,7 +3,7 @@ from flask import redirect, request, g, render_template
 from flask import Flask, session, redirect, url_for, escape
 from oauth2client.client import OAuth2WebServerFlow
 from hashlib import sha512
-from db import Users
+from db import Users, add_to_db, update_db
 import os
 import re
 
@@ -74,8 +74,8 @@ def sign_up():
         return 'sorry this email is already in use'
     new_user = Users(email, request.form['password'],
         request.remote_addr)
-    db.session.add(new_user)
-    db.session.commit()
+    add_to_db(new_user)
+    update_db()
     return redirect('/devices')
 
 
