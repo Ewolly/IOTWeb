@@ -1,6 +1,6 @@
 from flask import Blueprint, current_app
-from flask import redirect, request, g, render_template
-from flask import session, redirect, url_for, make_response
+from flask import redirect, request, g, render_template, flash, \
+    session, redirect, url_for, make_response
 from oauth2client.client import OAuth2WebServerFlow
 from hashlib import sha512
 from sqlalchemy import func
