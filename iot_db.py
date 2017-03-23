@@ -87,4 +87,4 @@ def hash_pass(email, password):
     return sha512(email+password).hexdigest()
 
 def get_user(email):
-return Users.query.filter(func.lower(Users.email) == email.lower()).first()
+    return Users.query.filter(func.lower(Users.email) == email.lower()).first()
