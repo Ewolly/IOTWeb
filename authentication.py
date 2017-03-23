@@ -16,9 +16,8 @@ def login_request():
 
 def validate_login(email, password):
     email = email.strip()
-    hashed_password = sha512(password).hexdigest()
+    hashed_password = sha512(password+email).hexdigest()
     user = Users.get_user(email)
-    
     if user == None:
         flash("User '%s' not found." % email, 'error')
     elif user.password != hashed_password:

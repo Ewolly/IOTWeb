@@ -27,7 +27,7 @@ class Users(db.Model):
 
     def __init__(self, email, password):
         self.email = email
-        self.password = sha512(password).hexdigest()
+        self.password = sha512(password+email).hexdigest()
         self.creation_time = self.last_accessed = datetime.utcnow()
 
     def get_user(email):
