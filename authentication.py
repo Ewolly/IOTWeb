@@ -68,7 +68,7 @@ def sign_up():
 
 
 @auth.route('/password-reset', methods=['GET','POST'])
-def reset()
+def reset():
     if request.method == 'GET':
         return render_template('password_reset.html')
 
