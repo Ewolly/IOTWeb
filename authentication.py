@@ -1,8 +1,7 @@
 from flask import Blueprint
 from flask import redirect, request, render_template, flash, session, url_for
 from hashlib import sha512
-from sqlalchemy import func
-from iot_db import Users, add_to_db, update_db, get_user
+import iot_db
 import os
 import re
 from iot_email import send_mail
@@ -17,10 +16,10 @@ def login_request():
 
 def validate_login(email, password):
     email = email.strip()
-    user = get_user(email)
+    user = iot_db.get_user(email)
     if user == None:
         flash("User '%s' not found." % email, 'error')
-    elif user.password != hash_pass(email, password):
+    elif user.password != iot_db.hash_pass(email, password):
         flash('The entered password is incorrect.', 'error')
     else:
         session['email'] = email
@@ -52,13 +51,13 @@ def sign_up():
         flash('The entered passwords do not match.', 'error')
     elif not request.form.get('terms'):
         flash('Please accept the Terms and Conditions.', 'error')
-    elif get_user(email) is not None:
+    elif iot_db.get_user(email) is not None:
         flash('This account already exists.', 'info')
         return redirect(url_for('auth.login_request'), 303)
     else:
-        new_user = Users(email, request.form['password'])
-        add_to_db(new_user)
-        update_db()
+        new_user = iot_db.Users(email, request.form['password'])
+        iot_db.add_to_db(new_user)
+        iot_db.update_db()
         flash('Account created successfully.', 'success')
         flash('Welcome, %s.' % email, 'info')
         session['email'] = email
@@ -79,13 +78,13 @@ def reset():
     if re.match(r'[^@]+@[^@]+', email) is None:
         flash('Invalid email address.', 'error')
         return
-    user = get_user(email)
+    user = iot_db.get_user(email)
     if user is None:
         flash('This account does not exist', 'error')
         return
     user.nonce = ''.join(random.SystemRandom().choice(string.ascii_uppercase + string.digits) for _ in range(6))
     user.password_reset_time = datetime.utcnow()
-    update_db()
+    iot_db.update_db()
     send_mail(email, 'Password reset code','your password rest code is: '+user.nonce)
 
 @auth.route('/reset-confirmation')

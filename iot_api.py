@@ -2,8 +2,7 @@ from flask import Blueprint
 from flask import make_response, jsonify, request, url_for
 from functools import wraps
 from collections import namedtuple
-from iot_db import Users, Devices, add_to_db, drop_from_db, \
-    update_db, get_user
+import iot_db
 from datetime import datetime
 
 iot_api = Blueprint('iot_api', __name__)
@@ -39,7 +38,7 @@ def device_info(device_id):
     if user is None:
         return make_response(jsonify({'error': err_msg}), 400)
 
-    device = Devices.query.get(device_id)
+    device = iot_db.Devices.query.get(device_id)
     if device is None:
         return make_response(jsonify({
             'error': 'device_id does not exist'}), 400)
@@ -81,17 +80,17 @@ def register_device():
                 }), 200)
     
     user_email = device_data['email']
-    user = get_user(user_email)
+    user = iot_db.get_user(user_email)
     if user is None:
-        user = Users(user_email, None)
-        add_to_db(user)
-        update_db()
-    new_device = Devices(
+        user = iot_db.Users(user_email, None)
+        iot_db.add_to_db(user)
+        iot_db.update_db()
+    new_device = iot_db.Devices(
         user.user_id, device_data['module'], request.remote_addr,
         request.environ.get('REMOTE_PORT'), 
         device_data.get('friendly_name'))
-    add_to_db(new_device)
-    update_db()
+    iot_db.add_to_db(new_device)
+    iot_db.update_db()
     return make_response(jsonify({
         'device_id': new_device.device_id,
         'device_url': url_for('.device_info', 
@@ -100,7 +99,7 @@ def register_device():
 
 @iot_api.route('/device/<int:device_id>/deregister', methods=['DELETE'])
 def deregister_device():
-    device = Devices.query.get(device_id)
+    device = iot_db.Devices.query.get(device_id)
     if device is None:
         return make_response(jsonify({
             'error': 'device does not exist'
@@ -112,7 +111,7 @@ def deregister_device():
         return make_response(jsonify({
             'error': 'missing email'
             }), 400)
-    user = get_user(user_email)
+    user = iot_db.get_user(user_email)
     if user is None:
         return make_response(jsonify({
             'error': 'account does not exist'
@@ -124,20 +123,20 @@ def deregister_device():
                 'error': 'user account is setup (need password)'
                 }), 400)
         else:
-            drop_from_db(user)
+            iot_db.drop_from_db(user)
     else:
         if device.user_id != user.user_id:
             return make_response(jsonify({
                 'error': 'account does not have permission to ' +
                          'delete this device'
                 }), 400)
-        if hash_pass(user_email, user_password) != user.password:
+        if iot_db.hash_pass(user_email, user_password) != user.password:
             return make_response(jsonify({
                 'error': 'password is incorrect'
                 }), 200)
 
-    drop_from_db(device)
-    update_db()
+    iot_db.drop_from_db(device)
+    iot_db.update_db()
     return make_response(jsonify({'status': 'success'}), 200)
 
 # todo
@@ -150,8 +149,8 @@ def check_credentials(email, password):
         return (None, 'missing email')
     if password is None:
         return (None, 'missing password')
-    user = get_user(email)
-    hashed_password = hash_pass(password)
+    user = iot_db.get_user(email)
+    hashed_password = iot_db.hash_pass(password)
     if user is None:
         return (None, 'account does not exist')
     if user.password != hashed_password:
