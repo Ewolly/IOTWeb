@@ -52,7 +52,7 @@ def device_info(device_id):
         'device_id': device.device_id,
         'user_id': device.user_id,
         'client_id': device.client_id,
-        'module': device.module,
+        'module_type': device.module,
         'friendly_name': device.friendly_name,
         'ip_address': device.ip_address,
         'port': device.port,
@@ -86,7 +86,7 @@ def register_device():
         iot_db.add_to_db(user)
         iot_db.update_db()
     new_device = iot_db.Devices(
-        user.user_id, device_data['module'], request.remote_addr,
+        user.user_id, device_data['module_type'], request.remote_addr,
         request.environ.get('REMOTE_PORT'), 
         device_data.get('friendly_name'))
     iot_db.add_to_db(new_device)
