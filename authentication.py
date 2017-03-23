@@ -2,7 +2,7 @@ from flask import Blueprint
 from flask import redirect, request, render_template, flash, session, url_for
 from hashlib import sha512
 from sqlalchemy import func
-from iot_db import Users, add_to_db, update_db
+from iot_db import Users, add_to_db, update_db, get_user
 import os
 import re
 from iot_email import send_mail
@@ -17,7 +17,7 @@ def login_request():
 
 def validate_login(email, password):
     email = email.strip()
-    user = Users.get_user(email)
+    user = get_user(email)
     if user == None:
         flash("User '%s' not found." % email, 'error')
     elif user.password != hash_pass(email, password):
@@ -52,7 +52,7 @@ def sign_up():
         flash('The entered passwords do not match.', 'error')
     elif not request.form.get('terms'):
         flash('Please accept the Terms and Conditions.', 'error')
-    elif Users.get_user(email) is not None:
+    elif get_user(email) is not None:
         flash('This account already exists.', 'info')
         return redirect(url_for('auth.login_request'), 303)
     else:
@@ -79,7 +79,7 @@ def reset():
     if re.match(r'[^@]+@[^@]+', email) is None:
         flash('Invalid email address.', 'error')
         return
-    user = Users.get_user(email)
+    user = get_user(email)
     if user is None:
         flash('This account does not exist', 'error')
         return

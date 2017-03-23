@@ -2,7 +2,8 @@ from flask import Blueprint
 from flask import make_response, jsonify, request, url_for
 from functools import wraps
 from collections import namedtuple
-from iot_db import Users, Devices, add_to_db, drop_from_db, update_db
+from iot_db import Users, Devices, add_to_db, drop_from_db, \
+    update_db, get_user
 from datetime import datetime
 
 iot_api = Blueprint('iot_api', __name__)
@@ -80,7 +81,7 @@ def register_device():
                 }), 200)
     
     user_email = device_data['email']
-    user = Users.get_user(user_email)
+    user = get_user(user_email)
     if user is None:
         user = Users(user_email, None)
         add_to_db(user)
@@ -111,7 +112,7 @@ def deregister_device():
         return make_response(jsonify({
             'error': 'missing email'
             }), 400)
-    user = Users.get_user(user_email)
+    user = get_user(user_email)
     if user is None:
         return make_response(jsonify({
             'error': 'account does not exist'
@@ -149,7 +150,7 @@ def check_credentials(email, password):
         return (None, 'missing email')
     if password is None:
         return (None, 'missing password')
-    user = Users.get_user(email)
+    user = get_user(email)
     hashed_password = hash_pass(password)
     if user is None:
         return (None, 'account does not exist')

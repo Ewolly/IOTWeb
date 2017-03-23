@@ -31,9 +31,6 @@ class Users(db.Model):
             self.password = hash_pass(email, password)
         self.creation_time = self.last_accessed = datetime.utcnow()
 
-    def get_user(self, email):
-        return self.query.filter(func.lower(Users.email) == email.lower()).first()
-
 class Clients(db.Model):
     client_id = db.Column(db.Integer, primary_key=True)
     user_id = db.Column(db.Integer, db.ForeignKey('users.user_id'))
@@ -88,3 +85,6 @@ def update_db():
 
 def hash_pass(email, password):
     return sha512(email+password).hexdigest()
+
+def get_user(email):
+return Users.query.filter(func.lower(Users.email) == email.lower()).first()
