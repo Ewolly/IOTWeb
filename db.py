@@ -27,7 +27,7 @@ class Users(db.Model):
 
     def __init__(self, email, password):
         self.email = email
-        self.password = hash_pass(password)
+        self.password = hash_pass(email, password)
         self.creation_time = self.last_accessed = datetime.utcnow()
 
     def get_user(self, email):
@@ -83,5 +83,5 @@ def add_to_db(db_object):
 def update_db():
     db.session.commit()
 
-def hash_pass(password):
+def hash_pass(email, password):
     return sha512(email+password).hexdigest()

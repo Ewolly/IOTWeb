@@ -20,7 +20,7 @@ def validate_login(email, password):
     user = Users.get_user(email)
     if user == None:
         flash("User '%s' not found." % email, 'error')
-    elif user.password != hash_pass(password):
+    elif user.password != hash_pass(email, password):
         flash('The entered password is incorrect.', 'error')
     else:
         session['email'] = email
