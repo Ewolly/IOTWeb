@@ -1,4 +1,4 @@
-cfrom flask import Blueprint
+from flask import Blueprint
 from flask import redirect, request, render_template, flash, session, url_for
 from hashlib import sha512
 from sqlalchemy import func
