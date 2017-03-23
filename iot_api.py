@@ -98,7 +98,7 @@ def register_device():
         }), 200)
 
 @iot_api.route('/device/<int:device_id>/deregister', methods=['DELETE'])
-def deregister_device():
+def deregister_device(device_id):
     device = iot_db.Devices.query.get(device_id)
     if device is None:
         return make_response(jsonify({
