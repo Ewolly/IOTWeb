@@ -1,11 +1,11 @@
-from flask import Blueprint
+cfrom flask import Blueprint
 from flask import redirect, request, render_template, flash, session, url_for
 from hashlib import sha512
 from sqlalchemy import func
-from db import Users, add_to_db, update_db
+from iot_db import Users, add_to_db, update_db
 import os
 import re
-from email import send_mail
+from iot_email import send_mail
 
 auth = Blueprint('auth', __name__)
 
@@ -73,7 +73,6 @@ def reset()
         return render_template('password_reset.html')
 
     email = request.form.get('email', '').strip()
-
     if email == '':
         flash('Invalid request (email missing).', 'error')
         return
@@ -91,3 +90,4 @@ def reset()
 
 @auth.route('/reset-confirmation')
 def reset_confirmed()
+    pass

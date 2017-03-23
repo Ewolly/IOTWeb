@@ -27,7 +27,8 @@ class Users(db.Model):
 
     def __init__(self, email, password):
         self.email = email
-        self.password = hash_pass(email, password)
+        if password is not None:
+            self.password = hash_pass(email, password)
         self.creation_time = self.last_accessed = datetime.utcnow()
 
     def get_user(self, email):
@@ -66,7 +67,6 @@ class Devices(db.Model):
     port = db.Column(db.Integer)
     first_connected = db.Column(db.DateTime)
     last_checked = db.Column(db.DateTime)
-    past_clients = db.Column(pg.ARRAY(db.Integer))
 
     def __init__(self, user_id, module, ip_address, port, 
         friendly_name=None):
@@ -79,6 +79,9 @@ class Devices(db.Model):
 
 def add_to_db(db_object):
     db.session.add(db_object)
+
+def drop_from_db(db_object):
+    db.session.delete(db_object)
 
 def update_db():
     db.session.commit()

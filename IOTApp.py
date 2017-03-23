@@ -2,7 +2,7 @@ from __future__ import print_function
 from flask import Flask, render_template
 from authentication import auth
 from werkzeug.contrib.fixers import ProxyFix
-from db import init_app
+from iot_db import init_app
 
 app = Flask(__name__, instance_relative_config=True)
 app.config.from_pyfile('config.py')
