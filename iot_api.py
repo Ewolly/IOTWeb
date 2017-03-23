@@ -30,7 +30,7 @@ def list_devices():
     return make_response(jsonify(response), 200)
 
 
-@iot_api.route('/device/<int:device_id>/info', methods=['POST'])
+@iot_api.route('/device/<int:device_id>/info', methods=['GET'])
 def device_info(device_id):
     user, err_msg = check_credentials(
         request.headers.get('email'), 
