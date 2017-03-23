@@ -30,6 +30,9 @@ class Users(db.Model):
         self.password = sha512(password).hexdigest()
         self.creation_time = self.last_accessed = datetime.utcnow()
 
+    def get_user(email):
+        return Users.query.filter(func.lower(Users.email) == email.lower()).first()
+
 class Clients(db.Model):
     client_id = db.Column(db.Integer, primary_key=True)
     user_id = db.Column(db.Integer, db.ForeignKey('users.user_id'))
