@@ -150,7 +150,7 @@ def check_credentials(email, password):
     if password is None:
         return (None, 'missing password')
     user = iot_db.get_user(email)
-    hashed_password = iot_db.hash_pass(password)
+    hashed_password = iot_db.hash_pass(email, password)
     if user is None:
         return (None, 'account does not exist')
     if user.password != hashed_password:
