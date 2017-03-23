@@ -89,5 +89,5 @@ def reset():
     send_mail(email, 'Password reset code','your password rest code is: '+user.nonce)
 
 @auth.route('/reset-confirmation')
-def reset_confirmed()
+def reset_confirmed():
     pass
