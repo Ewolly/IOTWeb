@@ -5,6 +5,7 @@ from sqlalchemy import func
 from db import Users, add_to_db, update_db
 import os
 import re
+from email import send_mail
 
 auth = Blueprint('auth', __name__)
 
@@ -65,3 +66,29 @@ def sign_up():
         session['id'] = new_user.user_id
         return redirect('/devices', 303)
     return redirect(url_for('auth.sign_up'), 303)
+
+
+@auth.route('/password-reset', methods=['GET','POST'])
+def reset()
+    if request.method == 'GET':
+        return render_template('password_reset.html')
+
+    email = request.form.get('email', '').strip()
+
+    if email == '':
+        flash('Invalid request (email missing).', 'error')
+        return
+    if re.match(r'[^@]+@[^@]+', email) is None:
+        flash('Invalid email address.', 'error')
+        return
+    user = Users.get_user(email)
+    if user is None:
+        flash('This account does not exist', 'error')
+        return
+    user.nonce = ''.join(random.SystemRandom().choice(string.ascii_uppercase + string.digits) for _ in range(6))
+    user.password_reset_time = datetime.utcnow()
+    update_db()
+    send_mail(email, 'Password reset code','your password rest code is: '+user.nonce)
+
+@auth.route('/reset-confirmation')
+def reset_confirmed()
