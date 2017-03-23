@@ -59,21 +59,21 @@ class Devices(db.Model):
     device_id = db.Column(db.Integer, primary_key=True)
     user_id = db.Column(db.Integer, db.ForeignKey('users.user_id'))
     client_id = db.Column(db.Integer, db.ForeignKey('clients.client_id'))
-    module = db.Column(db.Integer)
+    module_type = db.Column(db.Integer)
     friendly_name = db.Column(db.String(20))
     ip_address = db.Column(pg.INET)
     port = db.Column(db.Integer)
     first_connected = db.Column(db.DateTime)
     last_checked = db.Column(db.DateTime)
 
-    def __init__(self, user_id, module, ip_address, port, 
+    def __init__(self, user_id, module_type, ip_address, port, 
         friendly_name=None):
         self.user_id = user_id
-        self.module = module
+        self.module_type = module_type
         self.ip_address = ip_address
         self.port = port
         self.friendly_name = friendly_name
-
+        self.first_connected = self.last_checked = datetime.utcnow()
 
 def add_to_db(db_object):
     db.session.add(db_object)

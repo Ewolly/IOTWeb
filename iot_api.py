@@ -52,7 +52,7 @@ def device_info(device_id):
         'device_id': device.device_id,
         'user_id': device.user_id,
         'client_id': device.client_id,
-        'module_type': device.module,
+        'module_type': device.module_type,
         'friendly_name': device.friendly_name,
         'ip_address': device.ip_address,
         'port': device.port,

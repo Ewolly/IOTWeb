@@ -55,3 +55,6 @@ Temporary Items
 # Compiled python
 *.pyc
 credentials
+
+# shell scripts
+*.sh
