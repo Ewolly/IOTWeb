@@ -74,7 +74,7 @@ def reset():
     email = request.form.get('email', '').strip()
     if email == '':
         flash('Invalid request (email missing).', 'error')
-        return
+        
     if re.match(r'[^@]+@[^@]+', email) is None:
         flash('Invalid email address.', 'error')
         return
