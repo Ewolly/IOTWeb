@@ -115,7 +115,7 @@ def reset_confirmed():
 @auth.route('/confirm-password-reset')
 def new_password():
     email = request.args.get('email')
-    if request.method == 'GET':
+    if request.method == 'POST':
         return render_template('new_password.html')
     password = request.form.get('new_password')
     password_check = request.form.get('new_password_check')
