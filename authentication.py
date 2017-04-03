@@ -88,7 +88,7 @@ def reset():
     send_mail(email, 'Password reset code', 
         render_template('password_reset_email.html', email=email, nonce = user.nonce),
         current_app.config['SECRET_EMAIL'])
-    return redirect(url_for('auth.reset_confirmed'), 303)
+    return redirect(url_for('auth.reset_confirmed', email=email), 303)
 
 
 @auth.route('/reset-confirmation')
