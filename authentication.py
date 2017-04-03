@@ -86,6 +86,8 @@ def reset():
     user.password_reset_time = datetime.utcnow()
     iot_db.update_db()
     send_mail(email, 'Password reset code','your password rest code is: '+user.nonce)
+    return redirect(url_for('auth.reset_confirmed'), 303)
+
 
 @auth.route('/reset-confirmation')
 def reset_confirmed():
