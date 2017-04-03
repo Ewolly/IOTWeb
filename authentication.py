@@ -140,7 +140,7 @@ def new_password():
         user.password = password
         iot_db.update_db()
         return render_template('login.html')
-    flash('passwords did not match', error)
+    flash('passwords did not match', 'error')
     return redirect(url_for('auth.new_password'), 303)
 
 
