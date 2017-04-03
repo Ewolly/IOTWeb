@@ -160,7 +160,3 @@ def new_password():
         return redirect(url_for('auth.login_request'), 303)
     flash('passwords did not match', 'error')
     return redirect(url_for('auth.new_password'), 303)
-
-
-
-
