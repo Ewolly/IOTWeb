@@ -85,7 +85,9 @@ def reset():
     user.nonce = ''.join(random.SystemRandom().choice(string.ascii_uppercase + string.digits) for _ in range(6))
     user.password_reset_time = datetime.utcnow()
     iot_db.update_db()
-    send_mail(email, 'Password reset code','your password rest code is: '+user.nonce, current_app.config['SECRET_EMAIL'])
+    send_mail(email, 'Password reset code', 
+        render_template('password_reset_email.html', email=email, nonce = user.nonce),
+        current_app.config['SECRET_EMAIL'])
     return redirect(url_for('auth.reset_confirmed'), 303)
 
 
