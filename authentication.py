@@ -92,7 +92,7 @@ def reset():
 
 
 @auth.route('/reset-confirmation')
-def new_password():
+def reset_confirmed():
 
     email = request.args.get('email')
     nonce = request.args.get('nonce')
@@ -109,7 +109,7 @@ def new_password():
     return render_template('code_confirmation.html')
     
 @auth.route('/confirm-password-reset')
-def reset_confirmed():
+def new_password():
     if request.method == 'GET':
         return render_template('new_password.html')
 
