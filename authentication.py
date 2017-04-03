@@ -74,14 +74,14 @@ def reset():
     email = request.form.get('email', '').strip()
     if email == '':
         flash('Invalid request (email missing).', 'error')
-        return
+        return redirect(url_for('auth.reset'), 303)
     if re.match(r'[^@]+@[^@]+', email) is None:
         flash('Invalid email address.', 'error')
-        return
+        return redirect(url_for('auth.reset'), 303)
     user = iot_db.get_user(email)
     if user is None:
         flash('This account does not exist', 'error')
-        return
+        return redirect(url_for('auth.reset'), 303)
     user.nonce = ''.join(random.SystemRandom().choice(string.ascii_uppercase + string.digits) for _ in range(6))
     user.password_reset_time = datetime.utcnow()
     iot_db.update_db()
@@ -93,7 +93,6 @@ def reset():
 def reset_confirmed():
     if request.method == 'GET':
         return render_template('code_confirmation.html')
-        email = request.form.get('email', '').strip()
 
     user = iot_db.get_user(email)
     pass
