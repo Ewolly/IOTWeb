@@ -137,6 +137,7 @@ def new_password():
     if nonce != user.nonce:
         flash('try again', 'error')
         return redirect(url_for('auth.reset_confirmed'), 303)
+    time_passed = user.password_reset_time - datetime.utcnow()
     if time_passed > timedelta(minutes=2):
         flash('Password Reset Code has timed out!', 'error')
         user.nonce = None
