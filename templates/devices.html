@@ -9,13 +9,13 @@
         <li>
           <div>
             <img src="/static/device_icon/{{device.module_type}}.png">
-            {% if device.friendly_name is not None %}
+            {% if device.friendly_name is not none %}
               <span class="device-name">{{ device.friendly_name }} - {{ module_names[device.module_type] }}</span>
             {% else %}
               <span class="device-name">{{ module_names[device.module_type] }}</span>
             {% endif %}
             <span class="device-status"><i class="fa fa-cog" aria-hidden="true"></i></span>
-            {% if device.ip_address is not None %}
+            {% if device.ip_address is not none %}
               <span class="device-status device-connected">connected</span>
             {% else %}
               <span class="device-status device-disconnected">disconnected</span>
