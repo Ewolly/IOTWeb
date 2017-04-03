@@ -136,10 +136,13 @@ def new_password():
 
     password = request.form.get('new_password')
     password_check = request.form.get('new_password_check')
+    if len(password) < 8:
+        flash('password needs to be atleast 8 characters', 'error')
+        return redirect(url_for('auth.new_password'), 303)
     if password == password_check:
         user.password = password
         iot_db.update_db()
-        return render_template('login.html')
+        return redirect(url_for('auth.login_request'), 303)
     flash('passwords did not match', 'error')
     return redirect(url_for('auth.new_password'), 303)
 
