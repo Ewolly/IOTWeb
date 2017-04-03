@@ -5,6 +5,7 @@ import iot_db
 import os
 import re
 from iot_email import send_mail
+import random
 
 auth = Blueprint('auth', __name__)
 
@@ -74,9 +75,6 @@ def reset():
     email = request.form.get('email', '').strip()
     if email == '':
         flash('Invalid request (email missing).', 'error')
-        return redirect(url_for('auth.reset'), 303)
-    if re.match(r'[^@]+@[^@]+', email) is None:
-        flash('Invalid email address.', 'error')
         return redirect(url_for('auth.reset'), 303)
     user = iot_db.get_user(email)
     if user is None:
