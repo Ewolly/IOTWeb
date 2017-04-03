@@ -1,3 +1,23 @@
+ul.devices-list {
+    width: calc(100% - 4em));
+    background: #cccccc;
+    margin: 0.5em auto;
+    border-radius: 7px;
+}
+
+.devices-list li {
+    height: 40px;
+    width: 100%;
+}
+
+.devices-list img, span.device-name {
+    float: left;
+}
+
+.device-status {
+    float: right;
+}
+
 .flash {
 	width: calc(100% - 2em);
     background: #1f8dd6;

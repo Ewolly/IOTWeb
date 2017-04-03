@@ -1,11 +1,9 @@
 from flask import Blueprint
-from flask import make_response, jsonify, request, url_for
-from functools import wraps
-from collections import namedtuple
+from flask import request, url_for
 import iot_db
 from datetime import datetime
 
-iot_api = Blueprint('iot_api', __name__)
+iot_api = Blueprint('iot_devices', __name__)
 
 @iot_api.route('/heartbeat', methods=['GET'])
 def heartbeat():
