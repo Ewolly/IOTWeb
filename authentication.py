@@ -6,7 +6,7 @@ import os
 import re
 from iot_email import send_mail
 import random, string
-from datetime import datetime
+from datetime import datetime, timedelta
 
 
 auth = Blueprint('auth', __name__)
@@ -106,6 +106,13 @@ def reset_confirmed():
     if user is None:
         flash('email does not exist', 'error')
         return render_template('code_confirmation.html', email=email)
+    time_passed = user.password_reset_time - datetime.utcnow()
+    if time_passed > timedelta(minutes=30)
+        flash('Password Reset Code has timed out!', 'error')
+        user.nonce = None
+        user.password_reset_time = None
+        iot_db.update_db()
+        return redirect(url_for('auth.reset'), 303)
     if user.nonce == nonce:
         flash('Password Reset Confirmed', 'info')
         session['email'] = email
@@ -130,7 +137,12 @@ def new_password():
     if nonce != user.nonce:
         flash('try again', 'error')
         return redirect(url_for('auth.reset_confirmed'), 303)
-
+    if time_passed > timedelta(minutes=30)
+        flash('Password Reset Code has timed out!', 'error')
+        user.nonce = None
+        user.password_reset_time = None
+        iot_db.update_db()
+        return redirect(url_for('auth.reset'), 303)
     if request.method == 'GET':
         return render_template('new_password.html')
 
@@ -141,6 +153,8 @@ def new_password():
         return redirect(url_for('auth.new_password'), 303)
     if password == password_check:
         user.password = iot_db.hash_pass(email, password)
+        user.nonce = None
+        user.password_reset_time = None
         iot_db.update_db()
         return redirect(url_for('auth.login_request'), 303)
     flash('passwords did not match', 'error')
