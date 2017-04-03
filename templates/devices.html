@@ -3,7 +3,7 @@
 {% block content %}
   <h1>IoTBox Devices</h1>
   <div>
-    {% if devices %}
+    {% if len(devices) > 0 %}
       <ul class="devices-list">
       {% for device in devices if device.ip_address is not none%}
         <li>
