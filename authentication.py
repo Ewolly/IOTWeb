@@ -1,4 +1,4 @@
-from flask import Blueprint
+from flask import Blueprint, current_app
 from flask import redirect, request, render_template, flash, session, url_for
 from hashlib import sha512
 import iot_db
@@ -7,6 +7,7 @@ import re
 from iot_email import send_mail
 import random, string
 from datetime import datetime
+
 
 auth = Blueprint('auth', __name__)
 
@@ -84,7 +85,7 @@ def reset():
     user.nonce = ''.join(random.SystemRandom().choice(string.ascii_uppercase + string.digits) for _ in range(6))
     user.password_reset_time = datetime.utcnow()
     iot_db.update_db()
-    send_mail(email, 'Password reset code','your password rest code is: '+user.nonce)
+    send_mail(email, 'Password reset code','your password rest code is: '+user.nonce, current_app.config)
     return redirect(url_for('auth.reset_confirmed'), 303)
 
 
