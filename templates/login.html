@@ -15,7 +15,7 @@
       <div class="pure-controls">
         <button type="submit" class="pure-button pure-button-primary">Login</button>
       </div>
-        <a href="/password-reset" class="pure-button">Reset password</a>
+        <a href="{{ url_for('auth.reset') }}" class="pure-button">Reset password</a>
     </fieldset>
   </form>
 {% endblock %}
