@@ -143,6 +143,7 @@ def connect_device(device_id):
     pass
 
 @iot_api.route('/device/<int:device_id>/disconnect', methods=['DELETE'])
+def disconnect_device(device_id):
     pass
 # todo
 @iot_api.route('/device/update', methods=['POST'])
