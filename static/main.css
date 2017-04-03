@@ -4,32 +4,44 @@
     margin: 0 auto;
 }
 
+h1 {
+    padding-left: 40px;
+}
+
 ul.devices-list {
     width: 98%;
-    background: #cccccc;
+    background: #d2d2d2;
     margin: 0.5em auto;
     border-radius: 7px;
     list-style-type: none;
     padding: 0;
+    overflow: hidden;
 }
 
 .devices-list li {
     height: 70px;
-    width: 100%;
     padding: 5px;
-    margin: 5px;
+    margin: 0;
 }
 
 .devices-list li:nth-child(odd) {
     background: #dddddd;
 }
 
-.devices-list img, span.device-name {
+.devices-list img {
     float: left;
+}
+
+span.device-name {
+    float: left;
+    margin: 0 20px;
+    line-height: 70px;
 }
 
 .device-status {
     float: right;
+    margin: 0 8px 0 5px;
+    line-height: 70px;
 }
 
 .flash {
