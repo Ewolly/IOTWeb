@@ -101,7 +101,7 @@ def reset_confirmed():
         return render_template('code_confirmation.html', email="")
     if nonce is None:
         flash('nonce is none', 'info')
-        render_template('code_confirmation.html', email=email)
+        return render_template('code_confirmation.html', email=email)
     user = iot_db.get_user(email)
     if user is None:
         flash('email does not exist', 'error')
@@ -109,6 +109,7 @@ def reset_confirmed():
     if user.nonce == nonce:
         flash('Password Reset Confirmed', 'info')
         return redirect(url_for('auth.new_password'), 303)
+    flash('nonce is incorrect', 'error')
     return render_template('code_confirmation.html')
     
 @auth.route('/confirm-password-reset')
