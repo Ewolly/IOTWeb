@@ -108,14 +108,25 @@ def reset_confirmed():
         return render_template('code_confirmation.html', email=email)
     if user.nonce == nonce:
         flash('Password Reset Confirmed', 'info')
-        return redirect(url_for('auth.new_password'), 303)
+        return redirect(url_for('auth.new_password', email=email), 303)
     flash('nonce is incorrect', 'error')
     return render_template('code_confirmation.html')
     
 @auth.route('/confirm-password-reset')
 def new_password():
+    email = request.args.get('email')
     if request.method == 'GET':
         return render_template('new_password.html')
+    password = request.form.get('new_password')
+    password_check = request.form.get('new_password_check')
+    if password == password_check:
+        user = iot_db.get_user(email)
+        user.password = password
+        iot_db.update_db()
+        return render_template('login.html')
+    flash('passwords did not match', error)
+    return redirect(url_for('auth.new_password', email=email), 303)
+
 
 
 
