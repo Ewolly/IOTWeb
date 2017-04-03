@@ -92,7 +92,7 @@ def reset():
 
 
 @auth.route('/reset-confirmation')
-def reset_confirmed():
+def new_password():
 
     email = request.args.get('email')
     nonce = request.args.get('nonce')
