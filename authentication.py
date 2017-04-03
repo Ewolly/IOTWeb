@@ -5,7 +5,8 @@ import iot_db
 import os
 import re
 from iot_email import send_mail
-import random
+import random, string
+from datetime import datetime
 
 auth = Blueprint('auth', __name__)
 
