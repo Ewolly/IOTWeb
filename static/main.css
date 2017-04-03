@@ -19,7 +19,7 @@ ul.devices-list {
 }
 
 .devices-list li {
-    height: 70px;
+    height: 50px;
     padding: 5px;
     margin: 0;
 }
@@ -30,18 +30,19 @@ ul.devices-list {
 
 .devices-list img {
     float: left;
+    height: 40px;
 }
 
 span.device-name {
     float: left;
     margin: 0 20px;
-    line-height: 70px;
+    line-height: 50px;
 }
 
 .device-status {
     float: right;
     margin: 0 8px 0 5px;
-    line-height: 70px;
+    line-height: 50px;
 }
 
 .flash {
