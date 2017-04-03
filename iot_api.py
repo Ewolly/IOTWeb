@@ -138,18 +138,18 @@ def deregister_device(device_id):
     iot_db.update_db()
     return make_response(jsonify({'status': 'success'}), 200)
 
-@iot_api.route('/device/<int:device_id>/connect', methods=['POST'])
-def connect_device(device_id):
-    pass
+# @iot_api.route('/device/<int:device_id>/connect', methods=['POST'])
+# def connect_device(device_id):
+#     pass
 
-@iot_api.route('/device/<int:device_id>/disconnect', methods=['DELETE'])
-def disconnect_device(device_id):
-    pass
+# @iot_api.route('/device/<int:device_id>/disconnect', methods=['DELETE'])
+# def disconnect_device(device_id):
+#     pass
     
-# todo
-@iot_api.route('/device/update', methods=['POST'])
-def update_device():
-    pass
+# # todo
+# @iot_api.route('/device/update', methods=['POST'])
+# def update_device():
+#     pass
 
 def check_credentials(email, password):
     if email is None:
