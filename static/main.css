@@ -1,13 +1,27 @@
+#content {
+    width: 90%;
+    max-width: 1200px;
+    margin: 0 auto;
+}
+
 ul.devices-list {
-    width: calc(100% - 4em));
+    width: 98%;
     background: #cccccc;
     margin: 0.5em auto;
     border-radius: 7px;
+    list-style-type: none;
+    padding: 0;
 }
 
 .devices-list li {
-    height: 40px;
+    height: 70px;
     width: 100%;
+    padding: 5px;
+    margin: 5px;
+}
+
+.devices-list li:nth-child(odd) {
+    background: #dddddd;
 }
 
 .devices-list img, span.device-name {
