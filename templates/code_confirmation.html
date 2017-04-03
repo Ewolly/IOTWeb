@@ -2,13 +2,15 @@
 {% block title %}Password Confirmation{% endblock %}
 {% block content %}
   <h1>IoTBox Confirm Password Reset</h1>
-  <form class="pure-form pure-form-aligned" method="post">
+  <form class="pure-form pure-form-aligned" method="get">
     <fieldset>
       <div>
       <p>Please enter your received code</p>
       </div>
       <div class="pure-control-group">
-        <label for="email">Reset Code</label>
+        <label for="email">email</label>
+        <input type="text" id="email" name="email" value="{{ email }}">
+        <label for="nonce">Reset Code</label>
         <input type="text" id="nonce" name="nonce">
       </div>
       <div class="pure-controls">
