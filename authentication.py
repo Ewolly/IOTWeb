@@ -74,7 +74,7 @@ def reset():
     email = request.form.get('email', '').strip()
     if email == '':
         flash('Invalid request (email missing).', 'error')
-        
+        return
     if re.match(r'[^@]+@[^@]+', email) is None:
         flash('Invalid email address.', 'error')
         return
@@ -89,4 +89,9 @@ def reset():
 
 @auth.route('/reset-confirmation')
 def reset_confirmed():
+    if request.method == 'GET':
+        return render_template('code_confirmation.html')
+        email = request.form.get('email', '').strip()
+
+    user = iot_db.get_user(email)
     pass
