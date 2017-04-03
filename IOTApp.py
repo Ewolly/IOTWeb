@@ -16,11 +16,8 @@ app.wsgi_app = ProxyFix(app.wsgi_app)
 init_app(app)
 
 @app.route('/')
-@app.route('/<title>')
-@app.route('/<title>/<text>')
-def enter_text(title="Hello World", text=""):
-    return render_template('hello.html', 
-        title=title, text=text)
+def home():
+    return render_template('index.html')
 
 if __name__ == "__main__":
     app.run(host='127.0.0.1', port=8000)
