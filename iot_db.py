@@ -6,6 +6,7 @@ from sqlalchemy import func
 from sqlalchemy.dialects import postgresql as pg
 from datetime import datetime
 from hashlib import sha512
+from uuid import uuid4
 
 db = SQLAlchemy()
 
@@ -65,6 +66,7 @@ class Devices(db.Model):
     port = db.Column(db.Integer)
     first_connected = db.Column(db.DateTime)
     last_checked = db.Column(db.DateTime)
+    token = db.Column(pg.UUID)
 
     def __init__(self, user_id, module_type, ip_address, port, 
         friendly_name=None):
@@ -74,6 +76,7 @@ class Devices(db.Model):
         self.port = port
         self.friendly_name = friendly_name
         self.first_connected = self.last_checked = datetime.utcnow()
+        self.token = uuid4()
 
 def add_to_db(db_object):
     db.session.add(db_object)

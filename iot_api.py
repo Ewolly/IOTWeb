@@ -56,7 +56,8 @@ def device_info(device_id):
         'ip_address': device.ip_address,
         'port': device.port,
         'first_connected': device.first_connected.isoformat(),
-        'last_checked': device.last_checked.isoformat()
+        'last_checked': device.last_checked.isoformat(),
+        'token': str(device.token)
         }), 200)
 
 @iot_api.route('/device/register', methods=['POST'])
@@ -92,6 +93,7 @@ def register_device():
     iot_db.update_db()
     return make_response(jsonify({
         'device_id': new_device.device_id,
+        'token': str(new_device.token)
         'device_url': url_for('.device_info', 
                 device_id = new_device.device_id, _external=True)
         }), 200)
@@ -106,6 +108,12 @@ def deregister_device(device_id):
 
     user_email = request.headers.get('email')
     user_password = request.headers.get('password')
+    token = request.headers.get('token')
+    if token is not None and token == str(device.token):
+        iot_db.drop_from_db(device)
+        iot_db.update_db()
+        return make_response(jsonify({'status': 'success'}), 200)
+
     if user_email is None:
         return make_response(jsonify({
             'error': 'missing email'
