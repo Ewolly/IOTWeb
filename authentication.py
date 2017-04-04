@@ -107,7 +107,7 @@ def reset_confirmed():
         flash('email does not exist', 'error')
         return render_template('code_confirmation.html', email=email)
     time_passed = datetime.utcnow() - user.password_reset_time
-    if time_passed > timedelta(minutes=1):
+    if time_passed > timedelta(minutes=30):
         flash('Password Reset Code has timed out!', 'error')
         user.nonce = None
         user.password_reset_time = None
@@ -138,7 +138,7 @@ def new_password():
         flash('try again', 'error')
         return redirect(url_for('auth.reset_confirmed'), 303)
     time_passed = datetime.utcnow() - user.password_reset_time
-    if time_passed > timedelta(minutes=1):
+    if time_passed > timedelta(minutes=30):
         flash('Password Reset Code has timed out!', 'error')
         user.nonce = None
         user.password_reset_time = None
