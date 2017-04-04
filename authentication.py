@@ -24,7 +24,7 @@ def validate_login(email, password):
         flash("User '%s' not found." % email, 'error')
     elif user.password == None:
         flash('Please set up your accounts password', 'warning')
-        redirect(url_for('auth.sign_up', email=email),303)
+        return redirect(url_for('auth.sign_up', email=email),303)
     elif user.password != iot_db.hash_pass(email, password):
         flash('The entered password is incorrect.', 'error')
     else:
@@ -65,7 +65,7 @@ def sign_up():
         if user.password is None:
             iot_db.password = iot_db.hash_pass(password)
             iot_db.update_db()
-            redirect(url_for('auth.login_request'), 303)
+            return redirect(url_for('auth.login_request'), 303)
         flash('This account already exists.', 'info')
         return redirect(url_for('auth.login_request'), 303)
     else:
