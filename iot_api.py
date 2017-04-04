@@ -23,6 +23,8 @@ def list_devices():
         response.append({
             'device_id': device.device_id,
             'friendly_name': device.friendly_name,
+            'module_type': device.module_type,
+            'online': device.ip_address is not None,
             'connected': device.client_id is not None,
             'url': url_for('.device_info', 
                 device_id = device.device_id, _external=True)
@@ -60,7 +62,7 @@ def device_info(device_id):
         'token': str(device.token)
         }), 200)
 
-@iot_api.route('/device/register', methods=['POST'])
+@iot_api.route('/device/register', methods=['PUT'])
 def register_device():
     if not request.is_json:
         return make_response(jsonify({
