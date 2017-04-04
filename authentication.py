@@ -22,6 +22,9 @@ def validate_login(email, password):
     user = iot_db.get_user(email)
     if user == None:
         flash("User '%s' not found." % email, 'error')
+    elif user.password == None:
+        flash('Please set up your accounts password', 'warning')
+        redirect(url_for('auth.sign_up', email=email),303)
     elif user.password != iot_db.hash_pass(email, password):
         flash('The entered password is incorrect.', 'error')
     else:
@@ -34,12 +37,15 @@ def validate_login(email, password):
 @auth.route('/sign-up', methods=['GET','POST'])
 def sign_up():
     if request.method == 'GET':
+        email = request.args.get('email')
+        if email is not None:
+            form.email.value = email
         return render_template('sign_up.html')
-        
+
     email = request.form.get('email', '').strip()
     password = request.form.get('password')
     repeat_password =  request.form.get('password_check')
-    
+
     if email == '':
         flash('Invalid request (email missing).', 'error')
     elif password is None:
@@ -55,6 +61,11 @@ def sign_up():
     elif not request.form.get('terms'):
         flash('Please accept the Terms and Conditions.', 'error')
     elif iot_db.get_user(email) is not None:
+        user = iot_db.get_user(email)
+        if user.password is None:
+            iot_db.password = iot_db.hash_pass(password)
+            iot_db.update_db()
+            redirect(url_for('auth.login_request'), 303)
         flash('This account already exists.', 'info')
         return redirect(url_for('auth.login_request'), 303)
     else:
@@ -66,7 +77,7 @@ def sign_up():
         session['email'] = email
         session['id'] = new_user.user_id
         return redirect('/devices', 303)
-    return redirect(url_for('auth.sign_up'), 303)
+    return redirect(url_for('auth.sign_up', email=email), 303)
 
 
 @auth.route('/password-reset', methods=['GET','POST'])
