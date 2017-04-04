@@ -93,7 +93,7 @@ def register_device():
     iot_db.update_db()
     return make_response(jsonify({
         'device_id': new_device.device_id,
-        'token': str(new_device.token)
+        'token': str(new_device.token),
         'device_url': url_for('.device_info', 
                 device_id = new_device.device_id, _external=True)
         }), 200)
