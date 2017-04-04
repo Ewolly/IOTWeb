@@ -63,7 +63,7 @@ def sign_up():
     elif iot_db.get_user(email) is not None:
         user = iot_db.get_user(email)
         if user.password is None:
-            iot_db.password = iot_db.hash_pass(password)
+            iot_db.password = iot_db.hash_pass(email, password)
             iot_db.update_db()
             return redirect(url_for('auth.login_request'), 303)
         flash('This account already exists.', 'info')
