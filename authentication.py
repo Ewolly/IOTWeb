@@ -65,7 +65,10 @@ def sign_up():
         if user.password is None:
             user.password = iot_db.hash_pass(email, password)
             iot_db.update_db()
-            return redirect(url_for('auth.login_request'), 303)
+            flash('Welcome, %s.' % email, 'info')
+            session['email'] = email
+            session['id'] = new_user.user_id
+            return redirect('/devices', 303)
         flash('This account already exists.', 'info')
         return redirect(url_for('auth.login_request'), 303)
     else:
