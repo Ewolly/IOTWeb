@@ -78,7 +78,7 @@ def sign_up():
         flash('Account created successfully.', 'success')
         flash('Welcome, %s.' % email, 'info')
         session['email'] = email
-        session['id'] = new_user.user_id
+        session['id'] = user.user_id
         return redirect('/devices', 303)
     return redirect(url_for('auth.sign_up', email=email), 303)
 
