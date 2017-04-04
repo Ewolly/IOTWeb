@@ -39,7 +39,7 @@ def sign_up():
     if request.method == 'GET':
         email = request.args.get('email')
         if email is not None:
-            form.email.value = email
+            return render_template('sign_up.html', email=email)
         return render_template('sign_up.html')
 
     email = request.form.get('email', '').strip()
