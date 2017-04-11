@@ -148,6 +148,27 @@ def deregister_device(device_id):
     iot_db.update_db()
     return make_response(jsonify({'status': 'success'}), 200)
 
+@iot_api.route('/device/<int:device_id>/power/<any("on", "off"):state>')
+def power_device(state):
+    user, err_msg = check_credentials(
+        request.headers.get('email'), 
+        request.headers.get('password'))
+    if user is None:
+        return make_response(jsonify({'error': err_msg}), 400)
+
+    device = iot_db.Devices.query.get(device_id)
+    if device is None:
+        return make_response(jsonify({
+            'error': 'device_id does not exist'}), 400)
+    if device.user_id != user.user_id:
+        return make_response(jsonify({
+            'error': 'account does not have permission to ' +
+                     'view this device'
+            }), 400)
+
+    
+
+
 @iot_api.route('/device/<int:device_id>/connect', methods=['POST'])
 def connect_device(device_id):
     pass
@@ -155,8 +176,7 @@ def connect_device(device_id):
 @iot_api.route('/device/<int:device_id>/disconnect', methods=['DELETE'])
 def disconnect_device(device_id):
     pass
-    
-# todo
+
 @iot_api.route('/device/update', methods=['POST'])
 def update_device():
     pass
