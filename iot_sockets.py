@@ -37,13 +37,14 @@ class DeviceTCPHandler(SocketServer.StreamRequestHandler):
                 {'error': '2'}))
 
         device = iot_db.Devices.query.get(device_id)
+
+        self.wfile.write(json.dumps(
+                {'error': '3'}))
+        
         if device is None:
             self.wfile.write(json.dumps(
                 {'error': 'request id does not exist in the database'}))
             return
-
-        self.wfile.write(json.dumps(
-                {'error': '3'}))
 
         if device_token != device.token:
             self.wfile.write(json.dumps(
