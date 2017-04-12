@@ -23,21 +23,36 @@ class DeviceTCPHandler(SocketServer.StreamRequestHandler):
             self.wfile.write(json.dumps({'error': 'problem parsing JSON'}))
             return
 
+        self.wfile.write(json.dumps(
+                {'error': '1'}))
+
         device_id = self.message.get('id', None)
         device_token = self.message.get('token', None)
         if device_id is None or device_token is None:
             self.wfile.write(json.dumps(
                 {'error': 'request must have id and token'}))
             return
+
+        self.wfile.write(json.dumps(
+                {'error': '2'}))
+
         device = iot_db.Devices.query.get(device_id)
         if device.id is None:
             self.wfile.write(json.dumps(
                 {'error': 'request id does not exist in the database'}))
             return
+
+        self.wfile.write(json.dumps(
+                {'error': '3'}))
+
         if device_token != device.token:
             self.wfile.write(json.dumps(
                 {'error': 'request token and actual token do not match'}))
             return
+
+        self.wfile.write(json.dumps(
+                {'error': '4'}))
+
         device.last_checked = datetime.utcnow()
         device.ip_address = self.client_address[0]
         port = self.client_address[1]
