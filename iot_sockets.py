@@ -60,8 +60,8 @@ class DeviceTCPHandler(SocketServer.StreamRequestHandler):
                 return
             self.wfile.write(self.data)
 
-if __name__ == "__main__":
-    HOST, PORT = "localhost", 8899
+
+def start_device_server(port):
     SocketServer.TCPServer.allow_reuse_address = True
-    server = SocketServer.TCPServer((HOST, PORT), DeviceTCPHandler)
+    server = SocketServer.TCPServer(('localhost', port), DeviceTCPHandler)
     server.serve_forever()
