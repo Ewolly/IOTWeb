@@ -27,20 +27,20 @@ class DeviceTCPHandler(SocketServer.StreamRequestHandler):
             self.wfile.write(json.dumps(
                 {'error': 'request must have id and token'}))
             return
-            device = iot_db.Devices.query.get(device_id)
-    if device is None:
-
-        if device_id != iot_db.device_id: # yes i know these wont work they are plce holders
+        device = iot_db.Devices.query.get(device_id)
+        if device.id is None:
             self.wfile.write(json.dumps(
-                {'error': 'request id and actual id do not match'}))
+                {'error': 'request id does not exist in the database'}))
             return
-        if device_token != iot_db.token:
+        if device_token != device.token:
             self.wfile.write(json.dumps(
                 {'error': 'request token and actual token do not match'}))
             return
-        iot_db.last_checked = datetime.utcnow()
-        iot_db.ip_address = self.client_address
-        port
+        device.last_checked = datetime.utcnow()
+        device.ip_address = self.client_address[0]
+        port = self.client_address[1]
+        iot_db.update_db()
+
         # print '{}\'s device "{}" connected from {}.'.format(
         #     device.user.email
         #     device.friendly_name,
