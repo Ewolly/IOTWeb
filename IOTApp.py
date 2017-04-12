@@ -14,7 +14,7 @@ app.register_blueprint(iot_api, url_prefix='/api/1')
 app.register_blueprint(iot_devices)
 app.wsgi_app = ProxyFix(app.wsgi_app)
 
-start_device_server(8090)
+start_device_server(8091)
 
 init_app(app)
 
