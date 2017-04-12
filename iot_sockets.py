@@ -87,7 +87,7 @@ def client(ip, port, message):
 
 def start_device_server(port):
     HOST, PORT = "0.0.0.0", 8090
-    server = ThreadedTCPServer((HOST, PORT), ThreadedTCPRequestHandler)
+    server = ThreadedTCPServer((HOST, PORT), DeviceTCPHandler)
     ip, port = server.server_address
     server_thread = threading.Thread(target=server.serve_forever)
     server_thread.daemon = True
