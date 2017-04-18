@@ -166,9 +166,6 @@ def power_device(state):
                      'view this device'
             }), 400)
 
-    
-
-
 @iot_api.route('/device/<int:device_id>/connect', methods=['POST'])
 def connect_device(device_id):
     pass
