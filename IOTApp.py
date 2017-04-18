@@ -15,7 +15,14 @@ app.register_blueprint(iot_devices)
 app.wsgi_app = ProxyFix(app.wsgi_app)
 
 iot_db.init_app(app)
-iot_sockets.start_device_server()
+try:
+    iot_sockets.start_device_server()
+except Exception as e:
+    if e.errbo == 98:
+        # probably due to the debugger attempting to use an already used port
+        pass
+    else:
+        raise e
 
 @app.route('/')
 def home():

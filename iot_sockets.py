@@ -86,8 +86,8 @@ class ThreadedTCPServer(SocketServer.ThreadingMixIn, SocketServer.TCPServer):
                                         server_address,
                                         RequestHandlerClass)
 
-def start_device_server():
-    server = ThreadedTCPServer(('0.0.0.0', 7777), DeviceTCPHandler)
-    server_thread = threading.Thread(target=server.serve_forever)
+def start_server():
+    dev_server = ThreadedTCPServer(('0.0.0.0', 7777), DeviceTCPHandler)
+    server_thread = threading.Thread(target=dev_server.serve_forever)
     server_thread.setDaemon(True)
     server_thread.start()
