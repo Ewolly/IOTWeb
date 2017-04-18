@@ -18,7 +18,7 @@ iot_db.init_app(app)
 try:
     iot_sockets.start_device_server()
 except Exception as e:
-    if e.errbo == 98:
+    if e.errno == 98:
         # probably due to the debugger attempting to use an already used port
         pass
     else:
