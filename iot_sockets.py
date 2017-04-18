@@ -21,7 +21,7 @@ class DeviceTCPHandler(SocketServer.StreamRequestHandler):
         'echo': echo_text,
     }
 
-    def setup(self):
+    def handle(self):
         from IOTApp import app
         with app.app_context():    
             self.request.settimeout(30)
@@ -71,44 +71,41 @@ class DeviceTCPHandler(SocketServer.StreamRequestHandler):
             print '{}: {} ({})'.format(device_id, device_token, 
                 self.client_address[0])
 
-    def handle(self):
-        from IOTApp import app
-        while True:
-            try:
-                self.data = self.rfile.readline()
-            except:
-                self.wfile.write(json.dumps({'info': 'connection closed (timeout)'}))
-                return
+            while True:
+                try:
+                    self.data = self.rfile.readline()
+                except:
+                    self.wfile.write(json.dumps({'info': 'connection closed (timeout)'}))
+                    return
 
-            with app.app_context():    
                 device.last_checked = datetime.utcnow()
-            try:
-                self.message = json.loads(self.data)
-            except:
-                self.wfile.write(json.dumps({'error': 'problem parsing JSON'}))
-                return
-            action = self.message.get('action', None)
-            args = self.message.get('args', {})
-            if action is None:
-                self.wfile.write(json.dumps({'error': 'problem parsing JSON - no action'}))
-                return
+                try:
+                    self.message = json.loads(self.data)
+                except:
+                    self.wfile.write(json.dumps({'error': 'problem parsing JSON'}))
+                    return
+                action = self.message.get('action', None)
+                args = self.message.get('args', {})
+                if action is None:
+                    self.wfile.write(json.dumps({'error': 'problem parsing JSON - no action'}))
+                    return
 
-            if action not in supported_actions:
-                self.wfile.write(json.dumps({'error': "no action '%s'" % action}))
-                return
+                if action not in supported_actions:
+                    self.wfile.write(json.dumps({'error': "no action '%s'" % action}))
+                    return
 
-            self.end_conn = False
-            self.response_obj = None
-            try:
-                self.end_conn, self.response_obj = supported_actions[action](**args)
-            except Exception as e:
-                self.wfile.write(json.dumps({'error': str(e)}))
-                return
+                self.end_conn = False
+                self.response_obj = None
+                try:
+                    self.end_conn, self.response_obj = supported_actions[action](**args)
+                except Exception as e:
+                    self.wfile.write(json.dumps({'error': str(e)}))
+                    return
 
-            if self.response_obj is not None:
-                self.wfile.write(json.dumps(self.response_obj))
-            if self.end_conn:
-                return 
+                if self.response_obj is not None:
+                    self.wfile.write(json.dumps(self.response_obj))
+                if self.end_conn:
+                    return 
 
 
 class ThreadedTCPServer(SocketServer.ThreadingMixIn, SocketServer.TCPServer):
