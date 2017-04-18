@@ -80,14 +80,17 @@ class DeviceTCPHandler(SocketServer.StreamRequestHandler):
 
 
 class ThreadedTCPServer(SocketServer.ThreadingMixIn, SocketServer.TCPServer):
-    pass
+    def activate(self):
+        self.server_bind()
+        self.server_activate()
+        self.server_forever()
 
 def start_device_server(port):
     SocketServer.TCPServer.allow_reuse_address = True
     HOST, PORT = "0.0.0.0", 8091
     server = ThreadedTCPServer((HOST, PORT), DeviceTCPHandler, 
         bind_and_activate=False)
-    server_thread = threading.Thread(target=server.serve_forever)
+    server_thread = threading.Thread(target=server.activate)
     server_thread.daemon = True
     server_thread.start()
 
