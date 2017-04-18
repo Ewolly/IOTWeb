@@ -25,9 +25,7 @@ class DeviceTCPHandler(SocketServer.StreamRequestHandler):
             except:
                 self.wfile.write(json.dumps({'error': 'problem parsing JSON'}))
                 return
-
-            self.wfile.write(json.dumps({'info': 1}))
-
+                
             device_id = self.message.get('id', None)
             device_token = self.message.get('token', None)
             if device_id is None or device_token is None:
@@ -35,32 +33,23 @@ class DeviceTCPHandler(SocketServer.StreamRequestHandler):
                     {'error': 'request must have id and token'}))
                 return
 
-            self.wfile.write(json.dumps({'info': 2}))
-
             try:
                 device = iot_db.Devices.query.get(device_id)
             except Exception as e:
                 self.wfile.write(json.dumps({'error': repr(e)}))
                 return
-
-
             if device is None:
                 self.wfile.write(json.dumps(
                     {'error': 'request id does not exist in the database'}))
                 return
-
-            self.wfile.write(json.dumps({'info': 3}))
-
             if device_token != device.token:
                 self.wfile.write(json.dumps(
                     {'error': 'request token and actual token do not match'}))
                 return
 
-            self.wfile.write(json.dumps({'info': 4}))
-
             device.last_checked = datetime.utcnow()
             device.ip_address = self.client_address[0]
-            port = self.client_address[1]
+            device.port = self.client_address[1]
             iot_db.update_db()
 
             # print '{}\'s device "{}" connected from {}.'.format(
