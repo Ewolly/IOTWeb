@@ -4,10 +4,11 @@ import threading
 import json
 import iot_db
 from datetime import datetime
-from IOTApp import app
 
 class DeviceTCPHandler(SocketServer.StreamRequestHandler):
     def handle(self):
+        from IOTApp import app
+
         with app.app_context():    
             self.request.settimeout(30)
             try:
