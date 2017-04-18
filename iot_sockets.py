@@ -5,18 +5,29 @@ import json
 import iot_db
 from datetime import datetime
 
-class DeviceTCPHandler(SocketServer.StreamRequestHandler):
-    def handle(self):
-        from IOTApp import app
+def keepalive():
+    return False, None
 
+def disconnect():
+    return True, {'info': 'connection closed (disconnect'}
+
+def echo_text(text):
+    return False, {'echo': str(text).upper()}
+
+class DeviceTCPHandler(SocketServer.StreamRequestHandler):
+    supported_actions = {
+        'keepalive': keepalive,
+        'disconnect': disconnect,
+        'echo': echo_text,
+    }
+
+    def setup(self):
+        from IOTApp import app
         with app.app_context():    
             self.request.settimeout(30)
             try:
                 self.data = self.rfile.readline().strip()
             except:
-                print "No initial connection."
-                return
-            if self.data == '':
                 return
             
             self.message = None
@@ -25,7 +36,7 @@ class DeviceTCPHandler(SocketServer.StreamRequestHandler):
             except:
                 self.wfile.write(json.dumps({'error': 'problem parsing JSON'}))
                 return
-                
+
             device_id = self.message.get('id', None)
             device_token = self.message.get('token', None)
             if device_id is None or device_token is None:
@@ -59,17 +70,45 @@ class DeviceTCPHandler(SocketServer.StreamRequestHandler):
 
             print '{}: {} ({})'.format(device_id, device_token, 
                 self.client_address[0])
-            
-            while True:
-                try:
-                    self.data = self.rfile.readline()
-                except:
-                    print "Connection timed out."
-                    return
 
-                if self.data == '':
-                    return
-                self.wfile.write(self.data)
+    def handle(self):
+        from IOTApp import app
+        while True:
+            try:
+                self.data = self.rfile.readline()
+            except:
+                self.wfile.write(json.dumps({'info': 'connection closed (timeout)'}))
+                return
+
+            with app.app_context():    
+                device.last_checked = datetime.utcnow()
+            try:
+                self.message = json.loads(self.data)
+            except:
+                self.wfile.write(json.dumps({'error': 'problem parsing JSON'}))
+                return
+            action = self.message.get('action', None)
+            args = self.message.get('args', {})
+            if action is None:
+                self.wfile.write(json.dumps({'error': 'problem parsing JSON - no action'}))
+                return
+
+            if action not in supported_actions:
+                self.wfile.write(json.dumps({'error': "no action '%s'" % action}))
+                return
+
+            self.end_conn = False
+            self.response_obj = None
+            try:
+                self.end_conn, self.response_obj = supported_actions[action](**args)
+            except Exception as e:
+                self.wfile.write(json.dumps({'error': str(e)}))
+                return
+
+            if self.response_obj is not None:
+                self.wfile.write(json.dumps(self.response_obj))
+            if self.end_conn:
+                return 
 
 
 class ThreadedTCPServer(SocketServer.ThreadingMixIn, SocketServer.TCPServer):
