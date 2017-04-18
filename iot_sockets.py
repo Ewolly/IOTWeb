@@ -4,11 +4,11 @@ import threading
 import json
 import iot_db
 from datetime import datetime
-from flask import current_app
+from IOTApp import app
 
 class DeviceTCPHandler(SocketServer.StreamRequestHandler):
     def handle(self):
-        with current_app.app_context():    
+        with app.app_context():    
             self.request.settimeout(30)
             try:
                 self.data = self.rfile.readline().strip()
