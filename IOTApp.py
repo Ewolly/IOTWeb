@@ -2,10 +2,10 @@ from __future__ import print_function
 from flask import Flask, render_template
 from authentication import auth
 from werkzeug.contrib.fixers import ProxyFix
-from iot_db
+import iot_db
 from iot_api import iot_api
 from iot_devices import iot_devices
-from iot_sockets
+import iot_sockets
 
 app = Flask(__name__, instance_relative_config=True)
 app.config.from_pyfile('config.py')
