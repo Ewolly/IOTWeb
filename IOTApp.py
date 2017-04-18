@@ -15,7 +15,7 @@ app.register_blueprint(iot_devices)
 app.wsgi_app = ProxyFix(app.wsgi_app)
 
 iot_db.init_app(app)
-iot_sockets.start_device_server(8091)
+iot_sockets.start_device_server(8092)
 
 @app.route('/')
 def home():
