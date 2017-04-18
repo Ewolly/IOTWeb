@@ -17,7 +17,7 @@ app.wsgi_app = ProxyFix(app.wsgi_app)
 
 iot_db.init_app(app)
 try:
-    iot_sockets.start_device_server()
+    iot_sockets.start_server()
 except socket_error as e:
     if e.errno == 98:
         # probably due to the debugger attempting to use an already used port
