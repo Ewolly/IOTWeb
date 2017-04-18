@@ -90,8 +90,8 @@ class ThreadedTCPServer(SocketServer.ThreadingMixIn, SocketServer.TCPServer):
 def start_device_server():
     HOST, PORT = "0.0.0.0", 8091
     server = ThreadedTCPServer((HOST, PORT), DeviceTCPHandler)
-    self.server_bind()
-    self.server_activate()
-    server_thread = threading.Thread(target=server.activate)
+    server.server_bind()
+    server.server_activate()
+    server_thread = threading.Thread(target=server.serve_forever)
     server_thread.setDaemon(True)
     server_thread.start()
