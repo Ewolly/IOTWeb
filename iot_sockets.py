@@ -9,7 +9,7 @@ def keepalive():
     return False, None
 
 def disconnect():
-    return True, {'info': 'connection closed (disconnect'}
+    return True, {'info': 'connection closed (disconnect)'}
 
 def echo_text(text):
     return False, {'echo': str(text).upper()}
@@ -63,13 +63,7 @@ class DeviceTCPHandler(SocketServer.StreamRequestHandler):
             device.port = self.client_address[1]
             iot_db.update_db()
 
-            # print '{}\'s device "{}" connected from {}.'.format(
-            #     device.user.email
-            #     device.friendly_name,
-            #     self.client_address[0])
-
-            print '{}: {} ({})'.format(device_id, device_token, 
-                self.client_address[0])
+            self.wfile.write(json.dumps({'info': 'successfully authenticated'}))
 
             while True:
                 try:
