@@ -84,7 +84,7 @@ class ThreadedTCPServer(SocketServer.ThreadingMixIn, SocketServer.TCPServer):
 
 def start_device_server(port):
     HOST, PORT = "0.0.0.0", 8091
-    SocketServer.ThreadedTCPServer.allow_reuse_address = True
+    SocketServer.TCPServer.allow_reuse_address = True
     server = ThreadedTCPServer((HOST, PORT), DeviceTCPHandler)
     server_thread = threading.Thread(target=server.serve_forever)
     server_thread.daemon = True
