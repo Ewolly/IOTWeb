@@ -15,7 +15,7 @@ def echo_text(text):
     return False, {'echo': str(text).upper()}
 
 class DeviceTCPHandler(SocketServer.StreamRequestHandler):
-    supported_actions = {
+    self.supported_actions = {
         'keepalive': keepalive,
         'disconnect': disconnect,
         'echo': echo_text,
@@ -90,14 +90,14 @@ class DeviceTCPHandler(SocketServer.StreamRequestHandler):
                     self.wfile.write(json.dumps({'error': 'problem parsing JSON - no action'}))
                     return
 
-                if action not in supported_actions:
+                if action not in self.supported_actions:
                     self.wfile.write(json.dumps({'error': "no action '%s'" % action}))
                     return
 
                 self.end_conn = False
                 self.response_obj = None
                 try:
-                    self.end_conn, self.response_obj = supported_actions[action](**args)
+                    self.end_conn, self.response_obj = self.supported_actions[action](**args)
                 except Exception as e:
                     self.wfile.write(json.dumps({'error': str(e)}))
                     return
