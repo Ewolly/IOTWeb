@@ -15,7 +15,7 @@ def echo_text(text):
     return False, {'echo': str(text).upper()}
 
 class DeviceTCPHandler(SocketServer.StreamRequestHandler):
-    self.supported_actions = {
+    supported_actions = {
         'keepalive': keepalive,
         'disconnect': disconnect,
         'echo': echo_text,
