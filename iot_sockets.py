@@ -93,5 +93,3 @@ def start_device_server(port):
     server_thread = threading.Thread(target=server.activate)
     server_thread.daemon = True
     server_thread.start()
-
-
