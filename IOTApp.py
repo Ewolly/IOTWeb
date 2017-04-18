@@ -6,6 +6,7 @@ import iot_db
 from iot_api import iot_api
 from iot_devices import iot_devices
 import iot_sockets
+from socket import error as socket_error
 
 app = Flask(__name__, instance_relative_config=True)
 app.config.from_pyfile('config.py')
@@ -17,7 +18,7 @@ app.wsgi_app = ProxyFix(app.wsgi_app)
 iot_db.init_app(app)
 try:
     iot_sockets.start_device_server()
-except Exception as e:
+except socket_error as e:
     if e.errno == 98:
         # probably due to the debugger attempting to use an already used port
         pass
