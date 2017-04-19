@@ -67,6 +67,7 @@ class Devices(db.Model):
     first_connected = db.Column(db.DateTime)
     last_checked = db.Column(db.DateTime)
     token = db.Column(pg.UUID)
+    current_consumption = db.Column(db.Numeric)
 
     def __init__(self, user_id, module_type, ip_address, port, 
         friendly_name=None):
