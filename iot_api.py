@@ -59,7 +59,6 @@ def device_info(device_id):
         'port': device.port,
         'first_connected': device.first_connected.isoformat(),
         'last_checked': device.last_checked.isoformat(),
-        'token': str(device.token)
         }), 200)
 
 @iot_api.route('/device/register', methods=['PUT'])
