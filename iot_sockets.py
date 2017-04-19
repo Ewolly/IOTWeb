@@ -100,7 +100,7 @@ class DeviceTCPHandler(SocketServer.StreamRequestHandler):
             if self.device is None:
                 self.wfile.write(err('invalid device id'))
                 return
-            if device_token != device.token:
+            if device_token != self.device.token:
                 self.wfile.write(err('invalid device token'))
                 return
 
