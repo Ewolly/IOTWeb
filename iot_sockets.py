@@ -5,101 +5,169 @@ import json
 import iot_db
 from datetime import datetime
 
-def keepalive():
+# utility functions
+# -----------------------
+def err(message):
+    return json.dumps({'error': str(message)})
+
+def info(message):
+    return json.dumps({'info': str(message)})
+
+# remove ip address and port from db
+def remove_conn(device_id):
+    from IOTApp import app
+    with app.app_context():
+        device = iot_db.Devices.query.get(device_id)
+        device.ip_address = None
+        device.port = None
+        iot_db.update_db()
+
+# device actions
+# --------------
+# constantly recieved, keeps the socket open
+def keepalive(device_id, current_consumption=None):
+    from IOTApp import app
+    # update current_consumption in the db
+    if current_consumption != None:
+        with app.app_context():
+            device = iot_db.Devices.query.get(device_id)
+            device.current_consumption = current_consumption
+            iot_db.update_db()
     return False, None
 
-def disconnect():
+# closes the connection safely
+def disconnect(device_id):
+    e = remove_conn(device_id)
+    if e is not None:
+        return True, {'error': str(e)}
     return True, {'info': 'connection closed (disconnect)'}
 
-def echo_text(text):
+# returns the text sent in uppercase
+# TODO: remove, for debugging
+def echo_text(device_id, text):
     return False, {'echo': str(text).upper()}
 
+# connection handler
+# ------------------
 class DeviceTCPHandler(SocketServer.StreamRequestHandler):
-    supported_actions = {
+    # currently supported client actions
+    actions = {
         'keepalive': keepalive,
         'disconnect': disconnect,
         'echo': echo_text,
     }
 
+    # runs on new connection
     def handle(self):
+        # import app for the app_context()
+        # see flask docs
         from IOTApp import app
-        with app.app_context():    
-            self.request.settimeout(30)
-            try:
-                self.data = self.rfile.readline().strip()
-            except:
-                return
-            
-            self.message = None
-            try:
-                self.message = json.loads(self.data)
-            except:
-                self.wfile.write(json.dumps({'error': 'problem parsing JSON'}))
-                return
 
-            device_id = self.message.get('id', None)
-            device_token = self.message.get('token', None)
-            if device_id is None or device_token is None:
-                self.wfile.write(json.dumps(
-                    {'error': 'request must have id and token'}))
-                return
+        # check id and token
+        # ------------------
+        # connection closed after 30 seconds of no activity
+        self.request.settimeout(30)
+        
+        # read data, catching socket timeout exception
+        data = ''
+        try:
+            data = self.rfile.readline().strip()
+        except socket.timeout:
+            return
+        
+        # load the json into an obj, catching parse errors
+        message = {}
+        try:
+            message = json.loads(data)
+        except:
+            self.wfile.write(err('problem parsing JSON'))
+            return
 
+        # check the inital json contains an id and token
+        device_id = message.get('id', None)
+        device_token = message.get('token', None)
+        if device_id is None or device_token is None:
+            self.wfile.write(err('request must have id and token'))
+            return
+
+        # using the flask app context to manipulate the database
+        with app.app_context():
+            device = None
             try:
                 device = iot_db.Devices.query.get(device_id)
             except Exception as e:
-                self.wfile.write(json.dumps({'error': repr(e)}))
-                return
+                self.wfile.write(err(str(e)))
+                return                
             if device is None:
-                self.wfile.write(json.dumps(
-                    {'error': 'request id does not exist in the database'}))
+                self.wfile.write(err('invalid device id'))
                 return
             if device_token != device.token:
-                self.wfile.write(json.dumps(
-                    {'error': 'request token and actual token do not match'}))
+                self.wfile.write(err('invalid device token'))
                 return
 
+            # update the database with the new data
             device.last_checked = datetime.utcnow()
             device.ip_address = self.client_address[0]
             device.port = self.client_address[1]
             iot_db.update_db()
 
-            self.wfile.write(json.dumps({'info': 'successfully authenticated'}))
+        self.wfile.write(info('successfully authenticated'))
 
-            while True:
-                try:
-                    self.data = self.rfile.readline()
-                except:
-                    self.wfile.write(json.dumps({'info': 'connection closed (timeout)'}))
-                    return
-
+        # connection stays open
+        # ---------------------
+        while True:
+            # read data, catching socket timeout exception
+            data = ''
+            try:
+                data = self.rfile.readline()
+            except socket.timeout:
+                e = remove_conn(device_id)
+                if e is not None:
+                    self.wfile.write(err(str(e)))
+                else:
+                    self.wfile.write(info('connection closed (timeout)'))
+                return
+            
+            # at this point data has been recieved
+            # update last checked time 
+            with app.app_context():
                 device.last_checked = datetime.utcnow()
-                try:
-                    self.message = json.loads(self.data)
-                except:
-                    self.wfile.write(json.dumps({'error': 'problem parsing JSON'}))
-                    return
-                action = self.message.get('action', None)
-                args = self.message.get('args', {})
-                if action is None:
-                    self.wfile.write(json.dumps({'error': 'problem parsing JSON - no action'}))
-                    return
+                iot_db.update_db()
+            
+            # parse json
+            message = {}
+            try:
+                message = json.loads(data)
+            except:
+                self.wfile.write(err('problem parsing JSON'))
+                return
+            
+            # check that 'action' key exists and is valid 
+            action = message.get('action', None)
+            if action is None:
+                self.wfile.write(err('problem parsing JSON - no action'))
+                return
+            if action not in self.actions:
+                self.wfile.write(err("no action '%s'" % action))
+                return
+            
+            # get k(ey)w(ord) arg(uments)s
+            # can be empty, dependent on action function
+            kwargs = message.get('args', {})
 
-                if action not in self.supported_actions:
-                    self.wfile.write(json.dumps({'error': "no action '%s'" % action}))
-                    return
-
-                self.end_conn = False
-                self.response_obj = None
-                try:
-                    self.end_conn, self.response_obj = self.supported_actions[action](**args)
-                except Exception as e:
-                    self.wfile.write(json.dumps({'error': str(e)}))
-                    return
-
-                if self.response_obj is not None:
-                    self.wfile.write(json.dumps(self.response_obj))
-                if self.end_conn:
+            try:
+                # call action with device_id and kwargs
+                # return whether to close connection and message (can be None)
+                end_con, resp = self.actions[action](device_id, **kwargs)
+                if resp is not None:
+                    self.wfile.write(json.dumps(resp))
+                if end_con:
                     return 
+            except Exception as e:
+                # write the message of any error out and disconnect
+                # TODO: remove, for debugging
+                self.wfile.write(err(str(e)))
+                return
 
 
 class ThreadedTCPServer(SocketServer.ThreadingMixIn, SocketServer.TCPServer):
