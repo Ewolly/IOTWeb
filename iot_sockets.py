@@ -92,13 +92,12 @@ class DeviceTCPHandler(SocketServer.StreamRequestHandler):
 
         # using the flask app context to manipulate the database
         with app.app_context():
-            device = None
             try:
-                device = iot_db.Devices.query.get(device_id)
+                self.device = iot_db.Devices.query.get(device_id)
             except Exception as e:
                 self.wfile.write(err(str(e)))
                 return                
-            if device is None:
+            if self.device is None:
                 self.wfile.write(err('invalid device id'))
                 return
             if device_token != device.token:
@@ -106,9 +105,9 @@ class DeviceTCPHandler(SocketServer.StreamRequestHandler):
                 return
 
             # update the database with the new data
-            device.last_checked = datetime.utcnow()
-            device.ip_address = self.client_address[0]
-            device.port = self.client_address[1]
+            self.device.last_checked = datetime.utcnow()
+            self.device.ip_address = self.client_address[0]
+            self.device.port = self.client_address[1]
             iot_db.update_db()
 
         self.wfile.write(info('successfully authenticated'))
@@ -131,7 +130,7 @@ class DeviceTCPHandler(SocketServer.StreamRequestHandler):
             # at this point data has been recieved
             # update last checked time 
             with app.app_context():
-                device.last_checked = datetime.utcnow()
+                self.device.last_checked = datetime.utcnow()
                 iot_db.update_db()
             
             # parse json
