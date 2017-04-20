@@ -49,7 +49,7 @@ def echo_text(device_id, text):
 
 # connection handler
 # ------------------
-class DeviceTCPHandler(SocketServer.StreamRequestHandler):
+class DeviceTCPHandler(SocketServer.StreamRequestHandler, object):
     # currently supported client actions
     actions = {
         'keepalive': keepalive,
@@ -135,7 +135,7 @@ class DeviceTCPHandler(SocketServer.StreamRequestHandler):
     def handle(self):
         if self.device_id is None:
             return
-            
+
         # connection stays open
         # ---------------------
         while True:
