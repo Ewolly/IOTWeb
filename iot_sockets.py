@@ -184,7 +184,7 @@ class ThreadedTCPServer(SocketServer.ThreadingMixIn, SocketServer.TCPServer):
                                         RequestHandlerClass)
 
 def start_server():
-    dev_server = ThreadedTCPServer(('0.0.0.0', 7777), DeviceTCPHandler)
+    dev_server = ThreadedTCPServer(('127.0.0.1', 7070), DeviceTCPHandler)
     server_thread = threading.Thread(target=dev_server.serve_forever)
     server_thread.setDaemon(True)
     server_thread.start()
