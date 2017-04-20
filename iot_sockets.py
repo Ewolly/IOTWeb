@@ -57,12 +57,13 @@ class DeviceTCPHandler(SocketServer.StreamRequestHandler):
         'echo': echo_text,
     }
 
-    # runs on new connection
-    def handle(self):
+    def setup(self):
         # import app for the app_context()
         # see flask docs
         from IOTApp import app
-
+        self.device_id = None
+        
+        super(DeviceTCPHandler, self).setup()
         # read PROXY v1 info
         # see http://www.haproxy.org/download/1.8/doc/proxy-protocol.txt
         data = ''
@@ -105,7 +106,7 @@ class DeviceTCPHandler(SocketServer.StreamRequestHandler):
         if device_id is None or device_token is None:
             self.wfile.write(err('request must have id and token'))
             return
-
+        
         # using the flask app context to manipulate the database
         with app.app_context():
             device = None
@@ -127,8 +128,14 @@ class DeviceTCPHandler(SocketServer.StreamRequestHandler):
             device.port = client_port
             iot_db.update_db()
 
+        self.device_id = device_id
         self.wfile.write(info('successfully authenticated'))
 
+    # runs after setup
+    def handle(self):
+        if self.device_id is None:
+            return
+            
         # connection stays open
         # ---------------------
         while True:
@@ -190,6 +197,11 @@ class DeviceTCPHandler(SocketServer.StreamRequestHandler):
                 # TODO: remove, for debugging
                 self.wfile.write(err(str(e)))
                 return
+
+    def finish(self):
+        super(DeviceTCPHandler, self).finish()
+        if self.device_id != None:
+            remove_conn(self.device_id)
 
 
 class ThreadedTCPServer(SocketServer.ThreadingMixIn, SocketServer.TCPServer):
