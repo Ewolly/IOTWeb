@@ -37,9 +37,6 @@ def keepalive(device_id, current_consumption=None):
 
 # closes the connection safely
 def disconnect(device_id):
-    e = remove_conn(device_id)
-    if e is not None:
-        return True, {'error': str(e)}
     return True, {'info': 'connection closed (disconnect)'}
 
 # returns the text sent in uppercase
@@ -146,7 +143,6 @@ class DeviceTCPHandler(SocketServer.StreamRequestHandler, object):
             try:
                 data = self.rfile.readline()
             except socket.timeout:
-                e = remove_conn(device_id)
                 if e is not None:
                     self.wfile.write(err(str(e)))
                 else:
@@ -158,7 +154,7 @@ class DeviceTCPHandler(SocketServer.StreamRequestHandler, object):
             with app.app_context():
                 device = None
                 try:
-                    device = iot_db.Devices.query.get(device_id)
+                    device = iot_db.Devices.query.get(self.device_id)
                 except Exception as e:
                     self.wfile.write(err(str(e)))
                     return
@@ -189,7 +185,7 @@ class DeviceTCPHandler(SocketServer.StreamRequestHandler, object):
             try:
                 # call action with device_id and kwargs
                 # return whether to close connection and message (can be None)
-                end_con, resp = self.actions[action](device_id, **kwargs)
+                end_con, resp = self.actions[action](self.device_id, **kwargs)
                 if resp is not None:
                     self.wfile.write(json.dumps(resp))
                 if end_con:
