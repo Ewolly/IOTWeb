@@ -133,6 +133,8 @@ class DeviceTCPHandler(SocketServer.StreamRequestHandler, object):
 
     # runs after setup
     def handle(self):
+        from IOTApp import app
+
         if self.device_id is None:
             return
 
