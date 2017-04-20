@@ -59,6 +59,7 @@ class DeviceTCPHandler(SocketServer.StreamRequestHandler):
 
     # runs on new connection
     def handle(self):
+        print "client sconnected"
         # import app for the app_context()
         # see flask docs
         from IOTApp import app
