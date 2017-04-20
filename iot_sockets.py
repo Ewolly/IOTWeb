@@ -59,11 +59,25 @@ class DeviceTCPHandler(SocketServer.StreamRequestHandler):
 
     # runs on new connection
     def handle(self):
-        print "client sconnected"
-        print repr(self.rfile.readline())
         # import app for the app_context()
         # see flask docs
         from IOTApp import app
+
+        # read PROXY v1 info
+        # see http://www.haproxy.org/download/1.8/doc/proxy-protocol.txt
+        data = ''
+        try:
+            data = self.rfile.readline().strip()
+        except socket.timeout:
+            return
+
+        proxy_data = data.split()
+        if proxy_data[0] != 'PROXY':
+            # invalid proxy header
+            return
+
+        client_ip = proxy_data[2]
+        client_port = int(proxy_data[4]) 
 
         # check id and token
         # ------------------
@@ -109,8 +123,8 @@ class DeviceTCPHandler(SocketServer.StreamRequestHandler):
 
             # update the database with the new data
             device.last_checked = datetime.utcnow()
-            device.ip_address = self.client_address[0]
-            device.port = self.client_address[1]
+            device.ip_address = client_ip
+            device.port = client_port
             iot_db.update_db()
 
         self.wfile.write(info('successfully authenticated'))
