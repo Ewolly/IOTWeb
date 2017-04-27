@@ -1,4 +1,4 @@
-import smartplug
+from smartplug import SmartPlug
 import iot_db
 
 class USB(SmartPlug):
