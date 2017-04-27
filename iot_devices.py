@@ -2,18 +2,18 @@ from flask import Blueprint
 from flask import request, url_for, render_template, session, flash
 import iot_db
 from datetime import datetime
-import devices
+from devices import *
 
 iot_devices = Blueprint('iot_devices', __name__)
 module_names = [
-    devices.unknown.name,
-    devices.smartplug.name,
-    devices.bluetooth.name,
-    devices.usb.name,
-    devices.infrared.name,
-    devices.industrial.name,
-    devices.multiplug.name,
-    devices.audio.name,
+    unknown.name,
+    smartplug.name,
+    bluetooth.name,
+    usb.name,
+    infrared.name,
+    industrial.name,
+    multiplug.name,
+    audio.name,
 ]
 
 @iot_devices.route('/devices')
