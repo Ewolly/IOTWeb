@@ -4,6 +4,7 @@ from functools import wraps
 from collections import namedtuple
 import iot_db
 from datetime import datetime
+from devices import device_modules
 
 iot_api = Blueprint('iot_api', __name__)
 
@@ -11,13 +12,14 @@ iot_api = Blueprint('iot_api', __name__)
 def heartbeat():
     return make_response(jsonify({'status': 'ok'}), 200)
 
-@iot_api.route('/user/devices', methods=['GET'])
+@iot_api.route('/user/devices/list', methods=['GET'])
 def list_devices():
     user, err_msg = check_credentials(
         request.headers.get('email'), 
         request.headers.get('password'))
     if user is None:
         return make_response(jsonify({'error': err_msg}), 400)
+    
     response = []
     for device in user.devices:
         response.append({
@@ -25,10 +27,32 @@ def list_devices():
             'friendly_name': device.friendly_name,
             'module_type': device.module_type,
             'online': device.ip_address is not None,
-            'connected': device.client_id is not None,
             'url': url_for('.device_info', 
                 device_id = device.device_id, _external=True)
         })
+    return make_response(jsonify(response), 200)
+
+@iot_api.route('/user/devices/details', methods=['GET'])
+def device_details():
+    user, err_msg = check_credentials(
+        request.headers.get('email'), 
+        request.headers.get('password'))
+    if user is None:
+        return make_response(jsonify({'error': err_msg}), 400)
+    
+    response = []
+    for device in user.devices:
+        kwargs = {
+            'device_id': device.device_id,
+            'friendly_name': device.friendly_name,
+            'module_type': device.module_type,
+            'online': device.ip_address is not None,
+            'url': url_for('.device_info', 
+                device_id = device.device_id, _external=True)
+        }
+        kwargs.update(
+            device_modules[device.module_type].device_details(device))
+        response.append(kwargs)
     return make_response(jsonify(response), 200)
 
 @iot_api.route('/device/<int:device_id>/info', methods=['GET'])

@@ -5,4 +5,4 @@ class Unknown(object):
 
     @staticmethod
     def device_details(device):
-        return None
+        return {}

@@ -5,7 +5,7 @@ class SmartPlug(object):
 
     @staticmethod
     def device_details(device):
-        return None
+        return {'plug_status': device.plug_status}
 
     @staticmethod
     def set_plug(device, status):
