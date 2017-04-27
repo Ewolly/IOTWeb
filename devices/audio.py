@@ -1,5 +1,3 @@
-from smartplug import SmartPlug
-import iot_db
+from smartplug import *
 
-class Audio(SmartPlug):
-    name = 'audio'
+name = 'audio'

@@ -1,8 +1,4 @@
-import iot_db
+name = 'unknown'
 
-class Unknown(object):
-    name = 'unknown'
-
-    @staticmethod
-    def device_details(device):
-        return {}
+def device_details(device):
+    return {}

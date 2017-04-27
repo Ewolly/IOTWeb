@@ -1,5 +1,3 @@
-from smartplug import SmartPlug
-import iot_db
+from smartplug import *
 
-class Industrial(SmartPlug):
-    name = 'industrial'
+name = 'industrial'
