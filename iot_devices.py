@@ -5,15 +5,15 @@ from datetime import datetime
 from devices import *
 
 iot_devices = Blueprint('iot_devices', __name__)
-module_names = [
-    unknown.name,
-    smartplug.name,
-    bluetooth.name,
-    usb.name,
-    infrared.name,
-    industrial.name,
-    multiplug.name,
-    audio.name,
+modules = [
+    unknown.Unknown,
+    smartplug.SmartPlug,
+    bluetooth.Bluetooth,
+    usb.USB,
+    infrared.Infrared,
+    industrial.Industrial,
+    multiplug.MultiPlug,
+    audio.Audio,
 ]
 
 @iot_devices.route('/devices')
@@ -27,4 +27,4 @@ def list_devices():
         flash('User does not exist.', 'error')
         return redirect(url_for('auth.login_request'), 303)
     return render_template('devices.html', 
-        devices=user.devices, module_names=module_names)
+        devices=user.devices, module_names=(x.name for x in modules))
