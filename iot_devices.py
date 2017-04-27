@@ -2,18 +2,18 @@ from flask import Blueprint
 from flask import request, url_for, render_template, session, flash
 import iot_db
 from datetime import datetime
+import devices
 
 iot_devices = Blueprint('iot_devices', __name__)
-
-module_names = [
-    'smartplug',
-    'bluetooth',
-    'usb',
-    'infrared',
-    'industrial',
-    'multiplug',
-    'audio',
-    'unknown'
+modules = [
+    devices.unknown,
+    devices.smartplug,
+    devices.bluetooth,
+    devices.usb,
+    devices.infrared,
+    devices.industrial,
+    devices.multiplug,
+    devices.audio,
 ]
 
 @iot_devices.route('/devices')
@@ -27,4 +27,4 @@ def list_devices():
         flash('User does not exist.', 'error')
         return redirect(url_for('auth.login_request'), 303)
     return render_template('devices.html', 
-        devices=user.devices, module_names=module_names)
+        devices=user.devices, module_names=(x.name for x in modules))
