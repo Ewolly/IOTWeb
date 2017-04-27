@@ -1,5 +1,5 @@
 import smartplug
 import iot_db
 
-class USB(Bluetooth):
+class Bluetooth(SmartPlug):
     name = 'bluetooth'
