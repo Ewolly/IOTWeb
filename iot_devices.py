@@ -2,7 +2,7 @@ from flask import Blueprint
 from flask import request, url_for, render_template, session, flash
 import iot_db
 from datetime import datetime
-from devices import *
+import devices
 
 iot_devices = Blueprint('iot_devices', __name__)
 module_names = [
