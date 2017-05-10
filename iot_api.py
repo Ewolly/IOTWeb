@@ -15,7 +15,7 @@ def heartbeat():
 @iot_api.route('/device/types', methods=['GET'])
 def enumerate_devices():
     return make_response(
-        jsonify((d.name for d in device_modules)))
+        jsonify(list(d.name for d in device_modules)))
 
 @iot_api.route('/user/devices/list', methods=['GET'])
 def list_devices():
