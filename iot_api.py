@@ -12,6 +12,10 @@ iot_api = Blueprint('iot_api', __name__)
 def heartbeat():
     return make_response(jsonify({'status': 'ok'}), 200)
 
+@iot_api.route('/device/types', methods=['GET'])
+def enumerate_devices():
+    return make_response(jsonify(enumerate(device_modules)))
+
 @iot_api.route('/user/devices/list', methods=['GET'])
 def list_devices():
     user, err_msg = check_credentials(
