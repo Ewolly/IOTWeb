@@ -52,6 +52,8 @@ def device_details():
             'friendly_name': device.friendly_name,
             'module_type': device.module_type,
             'online': device.ip_address is not None,
+            'first_connected': device.first_connected,
+            'last_checked': device.last_checked,
             'url': url_for('.device_info', 
                 device_id = device.device_id, _external=True)
         }
