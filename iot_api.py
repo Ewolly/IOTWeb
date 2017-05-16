@@ -176,8 +176,9 @@ def deregister_device(device_id):
     iot_db.update_db()
     return make_response(jsonify({'status': 'success'}), 200)
 
-@iot_api.route('/device/<int:device_id>/power/<any("on", "off"):state>')
-def power_device(state):
+@iot_api.route('/device/<int:device_id>/power/<any("on", "off"):state>', 
+    methods=['POST'])
+def power_device(device_id, state):
     user, err_msg = check_credentials(
         request.headers.get('email'), 
         request.headers.get('password'))
@@ -193,6 +194,11 @@ def power_device(state):
             'error': 'account does not have permission to ' +
                      'view this device'
             }), 400)
+
+    device.plug_status = state == "on"
+    iot_db.update_db()
+    return make_response(jsonify({'status': 'success'}), 200)
+
 
 @iot_api.route('/device/<int:device_id>/connect', methods=['POST'])
 def connect_device(device_id):
