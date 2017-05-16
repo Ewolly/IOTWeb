@@ -44,7 +44,9 @@ def device_details():
         request.headers.get('password'))
     if user is None:
         return make_response(jsonify({'error': err_msg}), 400)
-    
+
+    iot_db.update_db()
+
     response = []
     for device in user.devices:
         kwargs = {
@@ -70,6 +72,7 @@ def device_info(device_id):
     if user is None:
         return make_response(jsonify({'error': err_msg}), 400)
 
+    iot_db.update_db()
     device = iot_db.Devices.query.get(device_id)
     if device is None:
         return make_response(jsonify({
@@ -79,6 +82,7 @@ def device_info(device_id):
             'error': 'account does not have permission to ' +
                      'view this device'
             }), 400)
+
 
     return make_response(jsonify({
         'device_id': device.device_id,
