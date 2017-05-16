@@ -12,11 +12,11 @@ def device_details(device):
         'mic_VU': 80
     }
     if (device.client_id is not None):
-        return_dict.append({
-            'client_id': device.client_id,
-            'client_name': device.client.friendly_name,
-            'ip_address': device.ip_address,
-            'port': device.port
-        })
+        return_dict['client_id'] = device.client_id
+        return_dict['client_name'] = device.client.friendly_name
+        return_dict['ip_address'] = device.ip_address
+        return_dict['port'] = device.port
 
-    return return_dict.append(smartplug.device_details(device))
+    plug_dict = smartplug.device_details(device).copy()
+    return_dict.update(plug_dict)
+    return return_dict
