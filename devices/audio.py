@@ -1,3 +1,4 @@
+import smartplug
 from smartplug import *
 
 name = 'audio'
@@ -18,4 +19,4 @@ def device_details(device):
             'port': device.port
         })
 
-    return return_dict
+    return return_dict.append(smartplug.device_details(device))
