@@ -100,14 +100,6 @@ class Infrared(db.Model):
             {'enabled': False},
         ])
 
-    def get_buttons(self):
-        if self.buttons is None:
-            return None
-        return json.loads(self.buttons)
-
-    def get_feedback(self):
-        return json.loads(self.feedback)
-
 def add_to_db(db_object):
     db.session.add(db_object)
 
