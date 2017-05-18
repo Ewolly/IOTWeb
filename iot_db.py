@@ -41,9 +41,10 @@ class Clients(db.Model):
     port = db.Column(db.Integer)
     mac_address = db.Column(pg.MACADDR)
     friendly_name = db.Column(db.String(15))
-    past_ips = db.Column(pg.ARRAY(pg.INET))
     first_connected = db.Column(db.DateTime)
     last_connected = db.Column(db.DateTime)
+    local_ip = db.Column(pg.INET)
+    local_port = db.Column(db.Integer)
 
     devices = db.relationship('Devices', backref='client',
         lazy='dynamic')
@@ -52,7 +53,6 @@ class Clients(db.Model):
         friendly_name=None):
         self.user_id = user_id
         self.ip_address = ip_address
-        self.past_ips = [ip_address]
         self.port = port
         self.mac_address = mac_address
         self.friendly_name = friendly_name
