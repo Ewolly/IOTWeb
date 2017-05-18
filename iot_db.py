@@ -7,6 +7,7 @@ from sqlalchemy.dialects import postgresql as pg
 from datetime import datetime
 from hashlib import sha512
 from uuid import uuid4
+import json
 
 db = SQLAlchemy()
 
@@ -57,7 +58,8 @@ class Clients(db.Model):
         self.friendly_name = friendly_name
 
 class Devices(db.Model):
-    device_id = db.Column(db.Integer, primary_key=True)
+    device_id = db.Column(db.Integer, db.ForeignKey('infrared.device_id'),
+        primary_key=True)
     user_id = db.Column(db.Integer, db.ForeignKey('users.user_id'))
     client_id = db.Column(db.Integer, db.ForeignKey('clients.client_id'))
     module_type = db.Column(db.Integer)
@@ -80,6 +82,31 @@ class Devices(db.Model):
         self.plug_status = False
         self.first_connected = self.last_checked = datetime.utcnow()
         self.token = str(uuid4())
+
+class Infrared(db.Model):
+    device_id = db.Column(db.Integer, primary_key=True)
+    buttons = db.Column(db.JSON)
+    feedback = db.Column(db.JSON)
+
+    device = db.relationship('Devices', backref='infrared',
+        lazy='dynamic')
+
+    def __init__(self, device_id):
+        self.device_id = device_id
+        self.feedback = json.dumps([
+            {'enabled': False},
+            {'enabled': False},
+            {'enabled': False},
+            {'enabled': False},
+        ])
+
+    def get_buttons(self):
+        if self.buttons is None:
+            return None
+        return json.loads(self.buttons)
+
+    def get_feedback(self):
+        return json.loads(self.feedback)
 
 def add_to_db(db_object):
     db.session.add(db_object)

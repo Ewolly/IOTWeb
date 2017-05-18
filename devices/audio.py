@@ -11,7 +11,7 @@ def device_details(device):
         'speaker_VU': 20,
         'mic_VU': 80
     }
-    if (device.client_id is not None):
+    if device.client_id is not None:
         return_dict['client_id'] = device.client_id
         return_dict['client_name'] = device.client.friendly_name
         return_dict['ip_address'] = device.ip_address
