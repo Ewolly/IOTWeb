@@ -77,6 +77,7 @@ class Devices(db.Model):
         self.ip_address = ip_address
         self.port = port
         self.friendly_name = friendly_name
+        self.plug_status = False
         self.first_connected = self.last_checked = datetime.utcnow()
         self.token = str(uuid4())
 
