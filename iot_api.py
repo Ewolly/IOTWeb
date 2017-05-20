@@ -241,6 +241,9 @@ def check_credentials(email, password):
         return (None, 'password is incorrect')
     return (user, None)
 
+# ----------
+# ir methods
+# ----------
 @iot_api.route('/device/<int:device_id>/repeater/<any("on", "off"):state>', 
     methods=['POST'])
 def ir_repeater(device_id, state):
@@ -274,3 +277,65 @@ def ir_repeater(device_id, state):
     ir_device.repeater = state == "on"
     iot_db.update_db()
     return make_response(jsonify({'status': 'success'}), 200)
+
+@iot_api.route('/device/<int:device_id>/ir/<int:button_id>/' + 
+    '<any("start", "stop", "single"):state>', methods=['PUT'])
+def ir_button_state(device_id, button_id, state):
+    user, err_msg = check_credentials(
+        request.headers.get('email'), 
+        request.headers.get('password'))
+    if user is None:
+        return make_response(jsonify({'error': err_msg}), 400)
+
+    device = iot_db.Devices.query.get(device_id)
+    if device is None:
+        return make_response(jsonify({
+            'error': 'device_id does not exist'}), 400)
+    if device.user_id != user.user_id:
+        return make_response(jsonify({
+            'error': 'account does not have permission to ' +
+                     'view this device'
+            }), 400)
+
+    if device.module_type != 4: # infrared
+        return make_response(jsonify({
+            'error': 'this device is not infrared'
+            }), 400)
+
+    ir_device = iot_db.Infrared.query.get(device_id)
+    if ir_device is None:
+        return make_response(jsonify({
+            'error': 'missing infrared table entry'
+            }), 400)
+
+    if ir_device.buttons is None:
+        return make_response(jsonify({
+            'error': 'no buttons defined'
+            }), 400)
+
+    button = None
+    for b in ir_device.buttons:
+        if b.get(id) == button_id:
+            button = b
+            break
+
+    if button = None:
+        return make_response(jsonify({
+            'error': 'button ' + str(button_id) + 
+                     'not defined'
+            }), 400)
+
+    # TODO: send button.pulses
+    if button.continuous:
+        if state == "on" or state == "off":
+            # TODO: implement this
+            return make_response(jsonify({'status': 'success'}), 200)
+        else:
+            return make_response(jsonify({'error': 'expected "on" or "off"'}), 400)
+    else:
+        if state == "single":
+            # TODO: implement this
+            return make_response(jsonify({'status': 'success'}), 200)
+        else:
+            return make_response(jsonify({'error': 'expected "single"'}), 400)
+
