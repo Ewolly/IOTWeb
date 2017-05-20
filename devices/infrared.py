@@ -9,7 +9,7 @@ def device_details(device, ir_device):
     if ir_device is not None:
         return_dict['feedback'] = ir_device.feedback
         
-        if device.infrared.buttons is not None:
+        if ir_device.buttons is not None:
             return_dict['buttons'] = ir_device.buttons
 
     plug_dict = smartplug.device_details(device).copy()
