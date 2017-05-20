@@ -315,7 +315,7 @@ def ir_button_state(device_id, button_id, state):
 
     button = None
     for b in ir_device.buttons:
-        if b.get(id) == button_id:
+        if b.get("id") == button_id:
             button = b
             break
 
