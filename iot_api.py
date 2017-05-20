@@ -109,7 +109,7 @@ def register_device():
     
     device_data = request.get_json(silent=True)
     if device_data is None:
-        return make_response(jsonify({
+        return make_response(jsonify({a
             'error': 'error parsing json'
             }), 400)
 
@@ -136,7 +136,7 @@ def register_device():
     if new_device.module_type == 4:
         iot_db.add_to_db(iot_db.Infrared(new_device.device_id))
         iot_db.update_db()
-        
+
     return make_response(jsonify({
         'device_id': new_device.device_id,
         'token': str(new_device.token),
@@ -240,3 +240,37 @@ def check_credentials(email, password):
     if user.password != hashed_password:
         return (None, 'password is incorrect')
     return (user, None)
+
+@iot_api.route('/device/<int:device_id>/repeater/<any("on", "off"):state>', 
+    methods=['POST'])
+def power_device(device_id, state):
+    user, err_msg = check_credentials(
+        request.headers.get('email'), 
+        request.headers.get('password'))
+    if user is None:
+        return make_response(jsonify({'error': err_msg}), 400)
+
+    device = iot_db.Devices.query.get(device_id)
+    if device is None:
+        return make_response(jsonify({
+            'error': 'device_id does not exist'}), 400)
+    if device.user_id != user.user_id:
+        return make_response(jsonify({
+            'error': 'account does not have permission to ' +
+                     'view this device'
+            }), 400)
+
+    if device.module_type != 4: # infrared
+        return make_response(jsonify({
+            'error': 'this device is not infrared'
+            }), 400)
+
+    ir_device = iot_db.Infrared.query.get(device_id)
+    if ir_device == None:
+        return make_response(jsonify({
+            'error': 'missing infrared table entry'
+            }), 400)
+
+    ir_device.repeater = state == "on"
+    iot_db.update_db()
+    return make_response(jsonify({'status': 'success'}), 200)
