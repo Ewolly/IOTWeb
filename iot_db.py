@@ -58,7 +58,7 @@ class Clients(db.Model):
         self.friendly_name = friendly_name
 
 class Devices(db.Model):
-    device_id = db.Column(db.Integer, db.ForeignKey('infrared.device_id'),
+    device_id = db.Column(db.Integer,
         primary_key=True)
     user_id = db.Column(db.Integer, db.ForeignKey('users.user_id'))
     client_id = db.Column(db.Integer, db.ForeignKey('clients.client_id'))
@@ -88,8 +88,8 @@ class Infrared(db.Model):
     buttons = db.Column(db.JSON)
     feedback = db.Column(db.JSON)
 
-    device = db.relationship('Devices', backref='infrared',
-        lazy='dynamic')
+    # device = db.relationship('Devices', backref='infrared',
+    #     lazy='dynamic')
 
     def __init__(self, device_id):
         self.device_id = device_id
