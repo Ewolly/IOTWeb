@@ -326,7 +326,10 @@ def ir_button_state(device_id, button_id, state):
             }), 400)
 
     # TODO: send button.pulses
-    if button.continuous:
+    cont = button.get("continuous")
+    if cont is None:
+        return make_response(jsonify({'error': 'continuous not set'}), 400)
+    elif cont:
         if state == "on" or state == "off":
             # TODO: implement this
             return make_response(jsonify({'status': 'success'}), 200)
