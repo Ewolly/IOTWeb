@@ -59,8 +59,12 @@ def device_details():
             'url': url_for('.device_info', 
                 device_id = device.device_id, _external=True)
         }
-        kwargs.update(
-            device_modules[device.module_type].device_details(device))
+        if device.module_type == 4: # infrared
+            details = device_modules[4].device_details(device,
+                iot_db.Infrared.query.get(device.device_id))
+        else:
+            details = device_modules[device.module_type].device_details(device);
+        kwargs.update(details)
         response.append(kwargs)
     return make_response(jsonify(response), 200)
 
