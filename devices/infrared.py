@@ -8,6 +8,7 @@ def device_details(device, ir_device):
 
     if ir_device is not None:
         return_dict['feedback'] = ir_device.feedback
+        return_dict['repeater'] = ir_device.repeater
         
         if ir_device.buttons is not None:
             return_dict['buttons'] = ir_device.buttons
