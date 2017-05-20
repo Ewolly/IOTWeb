@@ -88,17 +88,14 @@ class Infrared(db.Model):
     buttons = db.Column(db.JSON)
     feedback = db.Column(db.JSON)
 
-    # device = db.relationship('Devices', backref='infrared',
-    #     lazy='dynamic')
-
     def __init__(self, device_id):
         self.device_id = device_id
-        self.feedback = json.dumps([
+        self.feedback = [
             {'enabled': False},
             {'enabled': False},
             {'enabled': False},
             {'enabled': False},
-        ])
+        ]
 
 def add_to_db(db_object):
     db.session.add(db_object)
