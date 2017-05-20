@@ -109,7 +109,7 @@ def register_device():
     
     device_data = request.get_json(silent=True)
     if device_data is None:
-        return make_response(jsonify({a
+        return make_response(jsonify({
             'error': 'error parsing json'
             }), 400)
 
@@ -243,7 +243,7 @@ def check_credentials(email, password):
 
 @iot_api.route('/device/<int:device_id>/repeater/<any("on", "off"):state>', 
     methods=['POST'])
-def power_device(device_id, state):
+def ir_repeater(device_id, state):
     user, err_msg = check_credentials(
         request.headers.get('email'), 
         request.headers.get('password'))
