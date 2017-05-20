@@ -129,8 +129,14 @@ def register_device():
         user.user_id, device_data['module_type'], request.remote_addr,
         request.environ.get('REMOTE_PORT'), 
         device_data.get('friendly_name'))
+
     iot_db.add_to_db(new_device)
     iot_db.update_db()
+
+    if new_device.module_type == 4:
+        iot_db.add_to_db(iot_db.Infrared(new_device.device_id))
+        iot_db.update_db()
+        
     return make_response(jsonify({
         'device_id': new_device.device_id,
         'token': str(new_device.token),
