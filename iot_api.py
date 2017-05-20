@@ -330,11 +330,11 @@ def ir_button_state(device_id, button_id, state):
     if cont is None:
         return make_response(jsonify({'error': 'continuous not set'}), 400)
     elif cont:
-        if state == "on" or state == "off":
+        if state == "start" or state == "stop":
             # TODO: implement this
             return make_response(jsonify({'status': 'success'}), 200)
         else:
-            return make_response(jsonify({'error': 'expected "on" or "off"'}), 400)
+            return make_response(jsonify({'error': 'expected "stop" or "start"'}), 400)
     else:
         if state == "single":
             # TODO: implement this
