@@ -319,7 +319,7 @@ def ir_button_state(device_id, button_id, state):
             button = b
             break
 
-    if button = None:
+    if button is None:
         return make_response(jsonify({
             'error': 'button ' + str(button_id) + 
                      'not defined'
