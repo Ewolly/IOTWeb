@@ -8,12 +8,12 @@ import multiplug
 import audio
 
 device_modules = [
-    unknown,
-    smartplug,
-    bluetooth,
-    usb,
-    infrared,
-    industrial,
-    multiplug,
-    audio,
+    unknown.Unknown,
+    smartplug.Smartplug,
+    bluetooth.Bluetooth,
+    usb.USB,
+    infrared.Infrared,
+    industrial.Industrial,
+    multiplug.Multiplug,
+    audio.Audio,
 ]

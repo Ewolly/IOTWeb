@@ -1,4 +1,5 @@
-name = 'unknown'
+class Unknown(object):
+    name = 'unknown'
 
-def device_details(device):
-    return {}
+    def device_details(device):
+        return {}

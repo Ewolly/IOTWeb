@@ -1,3 +1,5 @@
-from smartplug import *
+from smartplug import Smartplug
 
-name = 'USB'
+class USB(Smartplug):
+    name = 'USB'
+    

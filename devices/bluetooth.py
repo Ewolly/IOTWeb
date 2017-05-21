@@ -1,3 +1,5 @@
-from smartplug import *
+from smartplug import Smartplug
 
-name = 'bluetooth'
+class Bluetooth(Smartplug):
+    name = 'bluetooth'
+    

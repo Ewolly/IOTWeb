@@ -1,3 +1,5 @@
-from smartplug import *
+from smartplug import Smartplug
 
-name = 'multiplug'
+class Multiplug(Smartplug):
+    name = 'multiplug'
+    

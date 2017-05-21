@@ -1,3 +1,5 @@
-from smartplug import *
+from smartplug import Smartplug
 
-name = 'industrial'
+class Industrial(Smartplug):
+    name = 'industrial'
+    

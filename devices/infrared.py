@@ -1,18 +1,17 @@
-import smartplug
-from smartplug import *
+from smartplug import Smartplug
 
-name = 'infrared'
+class Infrared(Smartplug):
+    name = 'infrared'
 
-def device_details(device, ir_device):
-    return_dict = { }
+    @classmethod
+    def device_details(device, ir_device):
+        return_dict = super(Infrared).device_details(device)
 
-    if ir_device is not None:
-        return_dict['feedback'] = ir_device.feedback
-        return_dict['repeater'] = ir_device.repeater
-        
-        if ir_device.buttons is not None:
-            return_dict['buttons'] = ir_device.buttons
+        if ir_device is not None:
+            return_dict['feedback'] = ir_device.feedback
+            return_dict['repeater'] = ir_device.repeater
+            
+            if ir_device.buttons is not None:
+                return_dict['buttons'] = ir_device.buttons
 
-    plug_dict = smartplug.device_details(device).copy()
-    return_dict.update(plug_dict)
-    return return_dict
+        return return_dict
