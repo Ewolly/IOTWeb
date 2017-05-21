@@ -3,9 +3,9 @@ from smartplug import Smartplug
 class Audio(Smartplug):
     name = 'audio'
 
-    @staticmethod
-    def device_details(device):
-        return_dict = Smartplug.device_details(device)
+    @classmethod
+    def device_details(self, device):
+        return_dict = super(Audio, self).device_details(device)
         return_dict['connected'] = device.client_id is not None
         return_dict['speaker_status'] = True
         return_dict['mic_status'] = False

@@ -3,9 +3,9 @@ from smartplug import Smartplug
 class Infrared(Smartplug):
     name = 'infrared'
 
-    @staticmethod
-    def device_details(device, ir_device):
-        return_dict = Smartplug.device_details(device)
+    @classmethod
+    def device_details(self, device, ir_device):
+        return_dict = super(Infrared, self).device_details(device)
 
         if ir_device is not None:
             return_dict['feedback'] = ir_device.feedback
