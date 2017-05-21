@@ -180,7 +180,9 @@ def power_device(device_id, state):
     iot_db.update_db()
     return make_response(jsonify({'status': 'success'}), 200)
 
-
+# ---------------------------
+# device connection functions
+# ---------------------------
 @iot_api.route('/device/<int:device_id>/connect', methods=['POST'])
 def connect_device(device_id):
     pass
