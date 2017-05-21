@@ -1,7 +1,11 @@
+attrs==17.1.0
+Automat==0.6.0
 click==6.7
+constantly==15.1.0
 Flask==0.12
 gunicorn==19.7.0
 httplib2==0.10.3
+incremental==16.10.1
 itsdangerous==0.24
 Jinja2==2.9.5
 MarkupSafe==1.0
@@ -15,4 +19,6 @@ requests-oauthlib==0.8.0
 rsa==3.4.2
 sendgrid==3.6.3
 six==1.10.0
+Twisted==17.1.0
 Werkzeug==0.12
+zope.interface==4.4.1
