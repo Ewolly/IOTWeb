@@ -12,11 +12,9 @@ iot_api = Blueprint('iot_api', __name__)
 def heartbeat():
     return make_response(jsonify({'status': 'ok'}), 200)
 
-@iot_api.route('/device/types', methods=['GET'])
-def enumerate_devices():
-    return make_response(
-        jsonify(list(d.name for d in device_modules)))
-
+# --------------
+# user functions
+# --------------
 @iot_api.route('/user/devices/list', methods=['GET'])
 def list_devices():
     user, err_msg = check_credentials(
@@ -45,8 +43,6 @@ def device_details():
     if user is None:
         return make_response(jsonify({'error': err_msg}), 400)
 
-    iot_db.update_db()
-
     response = []
     for device in user.devices:
         kwargs = {
@@ -68,25 +64,22 @@ def device_details():
         response.append(kwargs)
     return make_response(jsonify(response), 200)
 
+# ----------------
+# device functions
+# ----------------
+@iot_api.route('/device/types', methods=['GET'])
+def enumerate_devices():
+    return make_response(
+        jsonify(list(d.name for d in device_modules)))
+
 @iot_api.route('/device/<int:device_id>/info', methods=['GET'])
 def device_info(device_id):
-    user, err_msg = check_credentials(
+    user, device, err_msg = check_device(
         request.headers.get('email'), 
-        request.headers.get('password'))
-    if user is None:
+        request.headers.get('password'),
+        device_id)
+    if err_msg is not None:
         return make_response(jsonify({'error': err_msg}), 400)
-
-    iot_db.update_db()
-    device = iot_db.Devices.query.get(device_id)
-    if device is None:
-        return make_response(jsonify({
-            'error': 'device_id does not exist'}), 400)
-    if device.user_id != user.user_id:
-        return make_response(jsonify({
-            'error': 'account does not have permission to ' +
-                     'view this device'
-            }), 400)
-
 
     return make_response(jsonify({
         'device_id': device.device_id,
@@ -103,21 +96,15 @@ def device_info(device_id):
 @iot_api.route('/device/register', methods=['PUT'])
 def register_device():
     if not request.is_json:
-        return make_response(jsonify({
-            'error': 'request object must be application/json'
-            }), 400)
+        return make_response(jsonify({'error': 'request object must be application/json'}), 400)
     
     device_data = request.get_json(silent=True)
     if device_data is None:
-        return make_response(jsonify({
-            'error': 'error parsing json'
-            }), 400)
+        return make_response(jsonify({'error': 'error parsing json'}), 400)
 
     for field in ['email', 'module_type', 'setup_time']:
         if field not in device_data:
-            return make_response(jsonify({
-                'error': 'missing field: %s' % field
-                }), 200)
+            return make_response(jsonify({'error': 'missing field: %s' % field}), 200)
     
     user_email = device_data['email']
     user = iot_db.get_user(user_email)
@@ -148,9 +135,7 @@ def register_device():
 def deregister_device(device_id):
     device = iot_db.Devices.query.get(device_id)
     if device is None:
-        return make_response(jsonify({
-            'error': 'device does not exist'
-            }), 400)
+        return make_response(jsonify({'error': 'device does not exist'}), 400)
 
     user_email = request.headers.get('email')
     user_password = request.headers.get('password')
@@ -161,32 +146,21 @@ def deregister_device(device_id):
         return make_response(jsonify({'status': 'success'}), 200)
 
     if user_email is None:
-        return make_response(jsonify({
-            'error': 'missing email'
-            }), 400)
+        return make_response(jsonify({'error': 'missing email'}), 400)
     user = iot_db.get_user(user_email)
     if user is None:
-        return make_response(jsonify({
-            'error': 'account does not exist'
-            }), 400)
+        return make_response(jsonify({'error': 'account does not exist'}), 400)
 
     if user_password is None:
         if user.password is not None:
-            return make_response(jsonify({
-                'error': 'user account is setup (need password)'
-                }), 400)
+            return make_response(jsonify({'error': 'user account has been set up (need password)'}), 400)
         else:
             iot_db.drop_from_db(user)
     else:
         if device.user_id != user.user_id:
-            return make_response(jsonify({
-                'error': 'account does not have permission to ' +
-                         'delete this device'
-                }), 400)
+            return make_response(jsonify({'error': 'account does not have permission to delete this device'}), 400)
         if iot_db.hash_pass(user_email, user_password) != user.password:
-            return make_response(jsonify({
-                'error': 'password is incorrect'
-                }), 200)
+            return make_response(jsonify({'error': 'password is incorrect'}), 200)
 
     iot_db.drop_from_db(device)
     iot_db.update_db()
@@ -195,21 +169,12 @@ def deregister_device(device_id):
 @iot_api.route('/device/<int:device_id>/power/<any("on", "off"):state>', 
     methods=['POST'])
 def power_device(device_id, state):
-    user, err_msg = check_credentials(
+    user, device, err_msg = check_device(
         request.headers.get('email'), 
-        request.headers.get('password'))
-    if user is None:
+        request.headers.get('password'),
+        device_id)
+    if err_msg is not None:
         return make_response(jsonify({'error': err_msg}), 400)
-
-    device = iot_db.Devices.query.get(device_id)
-    if device is None:
-        return make_response(jsonify({
-            'error': 'device_id does not exist'}), 400)
-    if device.user_id != user.user_id:
-        return make_response(jsonify({
-            'error': 'account does not have permission to ' +
-                     'view this device'
-            }), 400)
 
     device.plug_status = state == "on"
     iot_db.update_db()
@@ -228,51 +193,19 @@ def disconnect_device(device_id):
 def update_device():
     pass
 
-def check_credentials(email, password):
-    if email is None:
-        return (None, 'missing email')
-    if password is None:
-        return (None, 'missing password')
-    user = iot_db.get_user(email)
-    hashed_password = iot_db.hash_pass(email, password)
-    if user is None:
-        return (None, 'account does not exist')
-    if user.password != hashed_password:
-        return (None, 'password is incorrect')
-    return (user, None)
-
-# ----------
-# ir methods
-# ----------
+# ------------
+# ir functions
+# ------------
 @iot_api.route('/device/<int:device_id>/repeater/<any("on", "off"):state>', 
     methods=['POST'])
 def ir_repeater(device_id, state):
-    user, err_msg = check_credentials(
+    user, device, err_msg = check_device(
         request.headers.get('email'), 
-        request.headers.get('password'))
-    if user is None:
+        request.headers.get('password'),
+        device_id,
+        4)
+    if err_msg is not None:
         return make_response(jsonify({'error': err_msg}), 400)
-
-    device = iot_db.Devices.query.get(device_id)
-    if device is None:
-        return make_response(jsonify({
-            'error': 'device_id does not exist'}), 400)
-    if device.user_id != user.user_id:
-        return make_response(jsonify({
-            'error': 'account does not have permission to ' +
-                     'view this device'
-            }), 400)
-
-    if device.module_type != 4: # infrared
-        return make_response(jsonify({
-            'error': 'this device is not infrared'
-            }), 400)
-
-    ir_device = iot_db.Infrared.query.get(device_id)
-    if ir_device == None:
-        return make_response(jsonify({
-            'error': 'missing infrared table entry'
-            }), 400)
 
     ir_device.repeater = state == "on"
     iot_db.update_db()
@@ -281,37 +214,16 @@ def ir_repeater(device_id, state):
 @iot_api.route('/device/<int:device_id>/ir/<int:button_id>/' + 
     '<any("start", "stop", "single"):state>', methods=['PUT'])
 def ir_button_state(device_id, button_id, state):
-    user, err_msg = check_credentials(
+    user, device, err_msg = check_device(
         request.headers.get('email'), 
-        request.headers.get('password'))
-    if user is None:
+        request.headers.get('password'),
+        device_id,
+        4)
+    if err_msg is not None:
         return make_response(jsonify({'error': err_msg}), 400)
 
-    device = iot_db.Devices.query.get(device_id)
-    if device is None:
-        return make_response(jsonify({
-            'error': 'device_id does not exist'}), 400)
-    if device.user_id != user.user_id:
-        return make_response(jsonify({
-            'error': 'account does not have permission to ' +
-                     'view this device'
-            }), 400)
-
-    if device.module_type != 4: # infrared
-        return make_response(jsonify({
-            'error': 'this device is not infrared'
-            }), 400)
-
-    ir_device = iot_db.Infrared.query.get(device_id)
-    if ir_device is None:
-        return make_response(jsonify({
-            'error': 'missing infrared table entry'
-            }), 400)
-
     if ir_device.buttons is None:
-        return make_response(jsonify({
-            'error': 'no buttons defined'
-            }), 400)
+        return make_response(jsonify({'error': 'no buttons defined'}), 400)
 
     button = None
     for b in ir_device.buttons:
@@ -320,10 +232,7 @@ def ir_button_state(device_id, button_id, state):
             break
 
     if button is None:
-        return make_response(jsonify({
-            'error': 'button ' + str(button_id) + 
-                     'not defined'
-            }), 400)
+        return make_response(jsonify({'error': 'button %d not defined' % button_id}), 400)
 
     # TODO: send button.pulses
     cont = button.get("continuous")
@@ -342,3 +251,34 @@ def ir_button_state(device_id, button_id, state):
         else:
             return make_response(jsonify({'error': 'expected "single"'}), 400)
 
+# -----------------
+# utility functions
+# -----------------
+def check_credentials(email, password):
+    if email is None:
+        return (None, 'missing email')
+    if password is None:
+        return (None, 'missing password')
+    user = iot_db.get_user(email)
+    hashed_password = iot_db.hash_pass(email, password)
+    if user is None:
+        return (None, 'account does not exist')
+    if user.password != hashed_password:
+        return (None, 'password is incorrect')
+    return (user, None)
+
+def check_device(email, password, device_id, module_type=None):
+    user, err_msg = check_credentials(email, password)
+    if user is None:
+        return (None, None, err_msg)
+
+    device = iot_db.Devices.query.get(device_id)
+    if device is None:
+        return (None, None, 'device_id %d does not exist' % device_id)
+    if device.user_id != user.user_id:
+        return (None, None, 'account does not have permission to view this device')
+    if module_type is not None:
+        if device.module_type != module_type:
+            return (None, None, 'device must be "%s", got "%s"' % 
+                (device_modules[module_type].name, device_modules[device.module_type].name))
+    return (user, device, None)
