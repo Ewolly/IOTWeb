@@ -124,4 +124,6 @@ class DeviceFactory(Factory):
 
 def start_server():
     reactor.listenTCP(7070, DeviceFactory())
-    reactor.run()
+    server_thread = threading.Thread(target=reactor.run)
+    server_thread.setDaemon(True)
+    server_thread.start()
