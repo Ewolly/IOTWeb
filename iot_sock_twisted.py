@@ -14,12 +14,10 @@ import iot_db
 # device actions
 # --------------
 def keepalive(device, current_consumption=None):
-    from IOTApp import app
     if current_consumption != None:
-        with app.app_context():
-            device.current_consumption = current_consumption
-            iot_db.update_db()
-    return False, None
+        device.current_consumption = current_consumption
+        print device.friendly_name
+    return False, {'info': 'kept alive'}
 
 # closes the connection safely
 def disconnect(device):
@@ -134,11 +132,11 @@ class DeviceHandler(LineReceiver, TimeoutMixin):
         self.state = 'MSG'
 
     def handle_MESSAGE(self, line):
+        self.device.last_checked = datetime.utcnow()
+        self.resetTimeout()
         from IOTApp import app
         with app.app_context():
-            self.device.last_checked = datetime.utcnow()
             iot_db.update_db()
-            self.resetTimeout()
         
         message = {}
         try:
@@ -163,6 +161,10 @@ class DeviceHandler(LineReceiver, TimeoutMixin):
             # call action with device_id and kwargs
             # return whether to close connection and message (can be None)
             end_con, resp = self.actions[action](self.device, **kwargs)
+            from IOTApp import app
+            with app.app_context():
+                iot_db.update_db()
+            
             if resp is not None:
                 self.sendLine(json.dumps(resp))
             if end_con:
