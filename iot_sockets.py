@@ -185,12 +185,13 @@ class DeviceHandler(LineReceiver, TimeoutMixin):
                 self.sendLine(self.err("no action '%s'" % action))
                 self.transport.loseConnection()
                 return
-            handle_ACTION(action, message.get('kwargs', {}))
+            self.handle_ACTION(action, message.get('kwargs', {}))
         elif response is not None:
             if response not in self.responses:
                 self.sendLine(self.err("no response '%s'" % response))
                 self.transport.loseConnection()
                 return
+            self.handle_RESPONSE(response, message.get('kwargs', {}))
         else:
             self.sendLine(self.err('problem parsing JSON - no action'))
             self.transport.loseConnection()

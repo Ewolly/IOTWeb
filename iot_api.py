@@ -166,20 +166,6 @@ def deregister_device(device_id):
     iot_db.update_db()
     return make_response(jsonify({'status': 'success'}), 200)
 
-@iot_api.route('/device/<int:device_id>/power/<any("on", "off"):state>', 
-    methods=['POST'])
-def power_device(device_id, state):
-    user, device, err_msg = check_device(
-        request.headers.get('email'), 
-        request.headers.get('password'),
-        device_id)
-    if err_msg is not None:
-        return make_response(jsonify({'error': err_msg}), 400)
-
-    device.plug_status = state == "on"
-    iot_db.update_db()
-    return make_response(jsonify({'status': 'success'}), 200)
-
 # ---------------------------
 # device connection functions
 # ---------------------------
@@ -194,6 +180,25 @@ def disconnect_device(device_id):
 @iot_api.route('/device/update', methods=['POST'])
 def update_device():
     pass
+
+# ------------------
+# smartplug funtions
+# ------------------
+@iot_api.route('/device/<int:device_id>/power/<any("on", "off"):state>', 
+    methods=['POST'])
+def power_device(device_id, state):
+    user, device, err_msg = check_device(
+        request.headers.get('email'), 
+        request.headers.get('password'),
+        device_id)
+    if err_msg is not None:
+        return make_response(jsonify({'error': err_msg}), 400)
+
+    device_modules[device.module_type].set_plug(device.device_id, state == "on")
+    
+    device.plug_status = state == "on"
+    iot_db.update_db()
+    return make_response(jsonify({'status': 'success'}), 200)
 
 # ------------
 # ir functions
