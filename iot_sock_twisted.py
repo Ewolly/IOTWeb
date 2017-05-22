@@ -133,7 +133,7 @@ class DeviceHandler(LineReceiver, TimeoutMixin):
         self.sendLine(self.info('successfully authenticated'))
         self.state = 'MSG'
 
-    def handle_MESSAGE(line):
+    def handle_MESSAGE(self, line):
         with app.app_context():
             self.device.last_checked = datetime.utcnow()
             iot_db.update_db()
@@ -179,7 +179,7 @@ class DeviceHandler(LineReceiver, TimeoutMixin):
             self.transport.loseConnection()
         else:
             self.transport.abortConnection()
-            
+
 
 class DeviceFactory(Factory):
     def __init__(self):
