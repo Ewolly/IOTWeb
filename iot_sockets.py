@@ -39,7 +39,7 @@ def echo_text(device_id, text):
 # ----------------
 # device responses
 # ----------------
-def power_resp(device_id, plug_status)
+def power_resp(device_id, plug_status):
     from IOTApp import app
     with app.app_context():
         device = iot_db.Devices.query.get(device_id)
