@@ -19,6 +19,7 @@ def keepalive(device_id, current_consumption=None):
         device = iot_db.Devices.query.get(device_id)
         if current_consumption != None:
             device.current_consumption = current_consumption
+            iot_db.update_db()
     return False, {'info': 'kept alive'}
 
 # closes the connection safely
