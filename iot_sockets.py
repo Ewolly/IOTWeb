@@ -9,7 +9,7 @@ import threading
 import json
 
 import iot_db
-from devices import Smartplug
+# from devices.smartplug import Smartplug
 
 device_sockets = {}
 
