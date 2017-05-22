@@ -1,8 +1,10 @@
 from twisted.internet.protocol import Factory
 from twisted.protocols.basic import LineReceiver
 from twisted.protocols.policies import TimeoutMixin
+from twisted.internet.endpoints import TCP4ServerEndpoint
 from twisted.internet import reactor
 
+from datetime import datetime
 import threading
 import json
 import iot_db
@@ -37,10 +39,10 @@ class DeviceHandler(LineReceiver, TimeoutMixin):
     # ---------------
     # utility methods
     # ---------------
-    def err(message):
+    def err(self, message):
         return json.dumps({'error': str(message)})
 
-    def info(message):
+    def info(self, message):
         return json.dumps({'info': str(message)})
 
     # --------------
@@ -53,17 +55,18 @@ class DeviceHandler(LineReceiver, TimeoutMixin):
         proxy_data = line.split()
         if len(proxy_data) < 4 or proxy_data[0] != 'PROXY':
             self.transport.abortConnection()
+            return
 
-        client_ip = proxy_data[2]
-        client_port = int(proxy_data[4])
-        self.state = 'PROXY'
+        self.client_ip = proxy_data[2]
+        self.client_port = int(proxy_data[4])
+        self.state = 'AUTH'
 
     def handle_AUTH(self, line):
         """check id and token
         """
         message = {}
         try:
-            message = json.loads(data)
+            message = json.loads(line)
         except Exception as e:
             self.sendLine(self.err('problem parsing JSON: %s' % str(e)))
             self.transport.loseConnection()
@@ -95,8 +98,8 @@ class DeviceHandler(LineReceiver, TimeoutMixin):
                 return
 
             self.device.last_checked = datetime.utcnow()
-            self.device.ip_address = client_ip
-            self.device.port = client_port
+            self.device.ip_address = self.client_ip
+            self.device.port = self.client_port
             iot_db.update_db()
         self.devices[self.device] = self
         self.sendLine(self.info('successfully authenticated'))
@@ -111,9 +114,11 @@ class DeviceHandler(LineReceiver, TimeoutMixin):
             self.sendLine(self.info(line))
 
     def timeoutConnection(self):
-        if state != 'PROXY':
-            self.sendLine(self.info)
-        self.transport.abortConnection()
+        if self.state != 'PROXY':
+            self.sendLine(self.info('timed out'))
+            self.transport.loseConnection()
+        else:
+            self.transport.abortConnection()
 
 
 class DeviceFactory(Factory):
@@ -124,7 +129,9 @@ class DeviceFactory(Factory):
         return DeviceHandler(self.devices)
 
 def start_server():
-    reactor.listenTCP(7070, DeviceFactory())
-    server_thread = threading.Thread(target=reactor.run)
+    endpoint = TCP4ServerEndpoint(reactor, 7070, interface='127.0.0.1')
+    d = endpoint.listen(DeviceFactory())
+    server_thread = threading.Thread(target=reactor.run, 
+        kwargs={'installSignalHandlers': 0})
     server_thread.setDaemon(True)
     server_thread.start()

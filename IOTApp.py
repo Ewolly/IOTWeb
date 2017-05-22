@@ -7,6 +7,7 @@ from iot_api import iot_api
 from iot_devices import iot_devices
 import iot_sock_twisted
 from socket import error as socket_error
+from twisted.internet import error as twisted_error
 
 app = Flask(__name__, instance_relative_config=True)
 app.config.from_pyfile('config.py')
@@ -18,16 +19,12 @@ app.wsgi_app = ProxyFix(app.wsgi_app)
 iot_db.init_app(app)
 try:
     iot_sock_twisted.start_server()
-except socket_error as e:
-    if e.errno == 98:
-        # probably due to the debugger attempting to use an already used port
-        pass
-    else:
-        raise e
+except twisted_error.CannotListenError as e:
+    pass
 
 @app.route('/')
 def home():
     return render_template('index.html')
 
 if __name__ == "__main__":
-    app.run(host='127.0.0.1', port=8000)
+    app.run(host='127.0.0.1', port=8000, use_reloader=False)
