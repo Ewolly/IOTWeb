@@ -13,19 +13,21 @@ import iot_db
 # --------------
 # device actions
 # --------------
-def keepalive(device, current_consumption=None):
-    if current_consumption != None:
-        device.current_consumption = current_consumption
-        print device.friendly_name
+def keepalive(device_id, current_consumption=None):
+    from IOTApp import app
+    with app.app_context():
+        device = iot_db.Devices.query.get(self.device_id)
+        if current_consumption != None:
+            device.current_consumption = current_consumption
     return False, {'info': 'kept alive'}
 
 # closes the connection safely
-def disconnect(device):
+def disconnect(device_id):
     return True, {'info': 'connection closed (disconnect)'}
 
 # returns the text sent in uppercase
 # TODO: remove, for debugging
-def echo_text(device, text):
+def echo_text(device_id, text):
     return False, {'echo': str(text).upper()}
 
 
@@ -38,7 +40,7 @@ class DeviceHandler(LineReceiver, TimeoutMixin):
 
     def __init__(self, devices):
         self.devices = devices
-        self.device = None
+        self.device_id = None
         self.client_ip = None
         self.client_port = None
         self.state = 'PROXY'
@@ -50,9 +52,9 @@ class DeviceHandler(LineReceiver, TimeoutMixin):
         self.setTimeout(10)
 
     def connectionLost(self, reason):
-        if self.device in self.devices:
+        if self.device_id in self.devices:
             # TODO: disconnect device
-            del self.devices[self.device]
+            del self.devices[self.device_id]
 
     def lineReceived(self, line):
         if self.state == 'PROXY':
@@ -98,7 +100,7 @@ class DeviceHandler(LineReceiver, TimeoutMixin):
             self.transport.loseConnection()
             return
 
-        device_id = message.get('id')
+        self.device_id = message.get('id')
         device_token = message.get('token')
         if device_id is None or device_token is None:
             self.sendLine(self.err('request must have id and token'))
@@ -109,32 +111,35 @@ class DeviceHandler(LineReceiver, TimeoutMixin):
         from IOTApp import app
         with app.app_context():
             try:
-                self.device = iot_db.Devices.query.get(device_id)
+                device = iot_db.Devices.query.get(self.device_id)
             except Exception as e:
                 self.sendLine(self.err(str(e)))
                 self.transport.loseConnection()
                 return                
-            if self.device is None:
+            if device is None:
                 self.sendLine(self.err('invalid device id'))
                 self.transport.loseConnection()
                 return
-            if device_token != self.device.token:
+            if device_token != device.token:
                 self.sendLine(self.err('invalid device token'))
                 self.transport.loseConnection()
                 return
 
-            self.device.last_checked = datetime.utcnow()
-            self.device.ip_address = self.client_ip
-            self.device.port = self.client_port
+            device.last_checked = datetime.utcnow()
+            device.ip_address = self.client_ip
+            device.port = self.client_port
             iot_db.update_db()
-        self.devices[self.device] = self
+        self.devices[self.device_id] = self
         self.sendLine(self.info('successfully authenticated'))
         self.state = 'MSG'
 
     def handle_MESSAGE(self, line):
-        self.device.last_checked = datetime.utcnow()
-        self.resetTimeout()
         from IOTApp import app
+        with app.app_context():
+            device = iot_db.Devices.query.get(self.device_id)
+            
+        device.last_checked = datetime.utcnow()
+        self.resetTimeout()
         with app.app_context():
             iot_db.update_db()
         
@@ -160,11 +165,7 @@ class DeviceHandler(LineReceiver, TimeoutMixin):
         try:
             # call action with device_id and kwargs
             # return whether to close connection and message (can be None)
-            end_con, resp = self.actions[action](self.device, **kwargs)
-            from IOTApp import app
-            with app.app_context():
-                iot_db.update_db()
-            
+            end_con, resp = self.actions[action](self.device_id, **kwargs)
             if resp is not None:
                 self.sendLine(json.dumps(resp))
             if end_con:
