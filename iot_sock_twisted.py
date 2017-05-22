@@ -138,6 +138,7 @@ class DeviceHandler(LineReceiver, TimeoutMixin):
         with app.app_context():
             self.device.last_checked = datetime.utcnow()
             iot_db.update_db()
+            self.resetTimeout()
         
         message = {}
         try:
