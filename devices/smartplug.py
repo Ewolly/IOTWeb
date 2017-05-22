@@ -1,3 +1,5 @@
+from iot_sockets import device_sockets
+
 class Smartplug(object):
     name = 'smartplug'
 
@@ -10,5 +12,6 @@ class Smartplug(object):
         return return_dict
 
     @staticmethod
-    def set_plug(device, status):
-        pass
+    def set_plug(device_id, status):
+        if device_id in device_sockets:
+            device_sockets[device_id].send_message({"power": status})

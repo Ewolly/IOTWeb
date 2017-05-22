@@ -1,13 +1,12 @@
 from __future__ import print_function
 from flask import Flask, render_template
-from authentication import auth
 from werkzeug.contrib.fixers import ProxyFix
+
+from authentication import auth
 import iot_db
 from iot_api import iot_api
 from iot_devices import iot_devices
-import iot_sock_twisted
-from socket import error as socket_error
-from twisted.internet import error as twisted_error
+import iot_sockets
 
 app = Flask(__name__, instance_relative_config=True)
 app.config.from_pyfile('config.py')
@@ -17,10 +16,7 @@ app.register_blueprint(iot_devices)
 app.wsgi_app = ProxyFix(app.wsgi_app)
 
 iot_db.init_app(app)
-try:
-    iot_sock_twisted.start_server()
-except twisted_error.CannotListenError as e:
-    pass
+iot_sockets.start_server()
 
 @app.route('/')
 def home():
