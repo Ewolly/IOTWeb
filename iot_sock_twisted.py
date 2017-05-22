@@ -9,7 +9,35 @@ import threading
 import json
 import iot_db
 
+# TODO: move to appropriate places
+# --------------
+# device actions
+# --------------
+def keepalive(device, current_consumption=None):
+    from IOTApp import app
+    if current_consumption != None:
+        with app.app_context():
+            device.current_consumption = current_consumption
+            iot_db.update_db()
+    return False, None
+
+# closes the connection safely
+def disconnect(device):
+    return True, {'info': 'connection closed (disconnect)'}
+
+# returns the text sent in uppercase
+# TODO: remove, for debugging
+def echo_text(device, text):
+    return False, {'echo': str(text).upper()}
+
+
 class DeviceHandler(LineReceiver, TimeoutMixin):
+    actions = {
+        'keepalive': keepalive,
+        'disconnect': disconnect,
+        'echo': echo_text,
+    }
+
     def __init__(self, devices):
         self.devices = devices
         self.device = None
@@ -106,12 +134,44 @@ class DeviceHandler(LineReceiver, TimeoutMixin):
         self.state = 'MSG'
 
     def handle_MESSAGE(line):
-        # TODO: handle messages
-        if line == 'disconnect':
-            self.sendLine(self.info('goodbye'))
+        with app.app_context():
+            self.device.last_checked = datetime.utcnow()
+            iot_db.update_db()
+        
+        message = {}
+        try:
+            message = json.loads(line)
+        except Exception as e:
+            self.sendLine(self.err('problem parsing JSON: %s' % str(e)))
             self.transport.loseConnection()
-        else:
-            self.sendLine(self.info(line))
+            return
+
+        action = message.get('action', None)
+        if action is None:
+            self.sendLine(self.err('problem parsing JSON - no action'))
+            self.transport.loseConnection()
+            return
+        if action not in self.actions:
+            self.sendLine(self.err("no action '%s'" % action))
+            self.transport.loseConnection()
+            return
+
+        kwargs = message.get('args', {})
+        try:
+            # call action with device_id and kwargs
+            # return whether to close connection and message (can be None)
+            end_con, resp = self.actions[action](self.device, **kwargs)
+            if resp is not None:
+                self.sendLine(json.dumps(resp))
+            if end_con:
+                self.transport.loseConnection()
+                return 
+        except Exception as e:
+            # write the message of any error out and disconnect
+            # TODO: remove, for debugging
+            self.sendLine(self.err(str(e)))
+            self.transport.loseConnection()
+            return
 
     def timeoutConnection(self):
         if self.state != 'PROXY':
@@ -119,7 +179,7 @@ class DeviceHandler(LineReceiver, TimeoutMixin):
             self.transport.loseConnection()
         else:
             self.transport.abortConnection()
-
+            
 
 class DeviceFactory(Factory):
     def __init__(self):
