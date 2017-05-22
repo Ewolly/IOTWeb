@@ -16,7 +16,7 @@ import iot_db
 def keepalive(device_id, current_consumption=None):
     from IOTApp import app
     with app.app_context():
-        device = iot_db.Devices.query.get(self.device_id)
+        device = iot_db.Devices.query.get(device_id)
         if current_consumption != None:
             device.current_consumption = current_consumption
     return False, {'info': 'kept alive'}
@@ -102,7 +102,7 @@ class DeviceHandler(LineReceiver, TimeoutMixin):
 
         self.device_id = message.get('id')
         device_token = message.get('token')
-        if device_id is None or device_token is None:
+        if self.device_id is None or device_token is None:
             self.sendLine(self.err('request must have id and token'))
             self.transport.loseConnection()
             return
