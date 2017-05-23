@@ -81,17 +81,25 @@ def device_info(device_id):
     if err_msg is not None:
         return make_response(jsonify({'error': err_msg}), 400)
 
-    return make_response(jsonify({
+    kwargs = {
         'device_id': device.device_id,
-        'user_id': device.user_id,
-        'client_id': device.client_id,
-        'module_type': device.module_type,
         'friendly_name': device.friendly_name,
-        'ip_address': device.ip_address,
-        'port': device.port,
-        'first_connected': device.first_connected.isoformat(),
-        'last_checked': device.last_checked.isoformat(),
-        }), 200)
+        'module_type': device.module_type,
+        'online': device.ip_address is not None,
+        'first_connected': device.first_connected,
+        'last_checked': device.last_checked,
+        'url': url_for('.device_info', 
+            device_id = device.device_id, _external=True)
+    }
+    if device.module_type == 4: # infrared
+        details = device_modules[4].device_details(device,
+            iot_db.Infrared.query.get(device.device_id))
+    else:
+        details = device_modules[device.module_type].device_details(device);
+    kwargs.update(details)
+    response.append(kwargs)
+    return make_response(jsonify(response), 200)
+
 
 @iot_api.route('/device/register', methods=['PUT'])
 def register_device():
