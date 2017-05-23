@@ -22,7 +22,7 @@
         {% endfor %}
       </ul>
     {% endif %}
-
+  <iframe id="hello" src="http://reseller.bizweb.vn/WebmasterLogin.aspx" style="border:1px soild #ffffff;" name="frame1" scrolling="no" frameborder="no" align="center" height = "600px" width = "400px">
     {% if offline_devices|length > 0 %}
       <h2>Offline</h2>
       <ul class="devices-list">
@@ -35,7 +35,7 @@
             {% else %}
               <span class="device-name">{{ module_names[device.module_type] }}</span>
             {% endif %}
-            <span href="#offlineModal" class="device-status" onclick="vex.dialog.alert('lets give this a go: {{ device.friendly_name }} is offline')"><i class="fa fa-cog" aria-hidden="true"></i></span>
+            <span href="#offlineModal" class="device-status" onclick="vex.open({unsafeContent: '<iframe id=\"modal\" src=\"https:\\\\iot.duality.co.nz\\ height=\"600\" width=\"400\"></iframe>'})"><i class="fa fa-cog" aria-hidden="true"></i></span>
             <span class="device-status device-offline">offline</span>
             </div>
           </li>
