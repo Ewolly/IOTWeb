@@ -1,13 +1,6 @@
 {% extends "base.html" %}
 {% block title %}Devices{% endblock %}
 {% block content %}
-  <dialog>
-    I'm a dialog!
-    <form method="dialog">
-      <input type="submit" value="Close" />
-    </form>
-  <dialog>
-    
   <h1>IoTBox Devices</h1>
     <div>
     {% if online_devices|length > 0 %}
@@ -22,12 +15,29 @@
             {% else %}
               <span class="device-name">{{ module_names[device.module_type] }}</span>
             {% endif %}
-            <span href="#onlineModal" class="device-status" onclick="dialog.showModal()"><i class="fa fa-cog" aria-hidden="true"></i></span>
+            <a href="#onlineModal" class="device-status"><i class="fa fa-cog" aria-hidden="true"></i></a>
             <span class="device-status device-online">online</span>
             </div>
           </li>
         {% endfor %}
       </ul>
+
+      <div id="onlineModal" class="modal-dialog">
+        <div>
+          <a href="#onlineClose" class="modal-close"><i class="fa fa-times" aria-hidden="true"></i></a>
+          <h2>Online Modal</h2>
+          <p>
+            TODO:
+            <ul>
+              <li>Make an audio one of this</li>
+              <li>Make an infrared one of this</li>
+              <li>Make an USB one of this</li>
+              <li>More info</li>
+              <li>Delete device</li>
+            </ul>
+          </p>
+        </div>
+      </div>
     {% endif %}
 
     {% if offline_devices|length > 0 %}
@@ -42,20 +52,30 @@
             {% else %}
               <span class="device-name">{{ module_names[device.module_type] }}</span>
             {% endif %}
-            <span href="#offlineModal" class="device-status" onclick="dialog.showModal()"><i class="fa fa-cog" aria-hidden="true"></i></span>
+            <a href="#offlineModal" class="device-status"><i class="fa fa-cog" aria-hidden="true"></i></a>
             <span class="device-status device-offline">offline</span>
             </div>
           </li>
         {% endfor %}
       </ul>
+
+      <div id="offlineModal" class="modal-dialog">
+        <div>
+          <a href="#offlineClose" class="modal-close"><i class="fa fa-times" aria-hidden="true"></i></a>
+          <h2>Offline Modal</h2>
+          <p>
+            TODO:
+            <ul>
+              <li>Last online</li>
+              <li>Delete item</li>
+            </ul>
+          </p>
+        </div>
+      </div>
     {% endif %}
 
-    {% if not (online_devices|length > 0 or offline_devices|length > 0) %}
+    {% if online_devices|length > 0 and offline_devices|length > 0 %}
       <h2>No associated devices.</h2>
     {% endif %}
-  </div>
-{% endblock %}
-{% block javascript %}
-  var dialog = document.querySelector('dialog');
-  dialogPolyfill.registerDialog(dialog); 
+  </div>    
 {% endblock %}
