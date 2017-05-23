@@ -3,7 +3,7 @@
 {% block content %}
   <h1>IoTBox Devices</h1>
     <div>
-    {% if online_devices.count() > 0 %}
+    {% if online_devices|length > 0 %}
       <h2>Online</h2>
       <ul class="devices-list">
         {% for device in online_devices %}
@@ -40,7 +40,7 @@
       </div>
     {% endif %}
 
-    {% if offline_devices.count() > 0 %}
+    {% if offline_devices|length > 0 %}
       <h2>Offline</h2>
       <ul class="devices-list">
         {% for device in offline_devices %}
