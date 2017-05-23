@@ -50,8 +50,10 @@ def power_resp(device_id, plug_status):
 def infrared(device_id, feedback):
     from IOTApp import app
     with app.app_context():
-        infraredDevice = iot_db.Infrared.query.get(device_id)
-        infraredDevice.feedback = feedback
+        ir_dev = iot_db.Infrared.query.get(device_id)
+        for i, feed in enumerate(feedback):
+            if ir_dev.feedback[i]["enabled"]:
+                ir_dev.feedback[i]["input"] = feed
         iot_db.update_db()
 
 class DeviceHandler(LineReceiver, TimeoutMixin):
