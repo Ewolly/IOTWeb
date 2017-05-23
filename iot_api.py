@@ -81,7 +81,7 @@ def device_info(device_id):
     if err_msg is not None:
         return make_response(jsonify({'error': err_msg}), 400)
 
-    kwargs = {
+    response = {
         'device_id': device.device_id,
         'friendly_name': device.friendly_name,
         'module_type': device.module_type,
@@ -96,8 +96,7 @@ def device_info(device_id):
             iot_db.Infrared.query.get(device.device_id))
     else:
         details = device_modules[device.module_type].device_details(device);
-    kwargs.update(details)
-    response.append(kwargs)
+    response.update(details)
     return make_response(jsonify(response), 200)
 
 
