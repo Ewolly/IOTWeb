@@ -2,38 +2,74 @@
 {% block title %}Devices{% endblock %}
 {% block content %}
   <h1>IoTBox Devices</h1>
-  <div>
+    <div>
     {% if devices.count() > 0 %}
-      <ul class="devices-list">
       {% for device in devices if device.ip_address is not none%}
-        <li>
-          <div>
+      <h2>Online</h2>
+        <ul class="devices-list">
+          <li>
+            <div>
             <img src="/static/device_icon/{{device.module_type}}.png">
             {% if device.friendly_name is not none %}
               <span class="device-name">{{ device.friendly_name }} - {{ module_names[device.module_type] }}</span>
             {% else %}
               <span class="device-name">{{ module_names[device.module_type] }}</span>
             {% endif %}
-            <span class="device-status"><i class="fa fa-cog" aria-hidden="true"></i></span>
+            <a href="#onlineModal" class="device-status"><i class="fa fa-cog" aria-hidden="true"></i></a>
             <span class="device-status device-online">online</span>
-          </div>
-        </li>
-      {% endfor %}
-      {% for device in devices if device.ip_address is none%}
-        <li>
+            </div>
+          </li>
+        </ul>
+
+        <div id="onlineModal" class="modal-dialog">
           <div>
+            <a href="#onlineClose" class="modal-close"><i class="fa fa-times" aria-hidden="true"></i></a>
+            <h2>Online Modal</h2>
+            <p>
+              TODO:
+              <ul>
+                <li>Make an audio one of this</li>
+                <li>Make an infrared one of this</li>
+                <li>Make an USB one of this</li>
+                <li>More info</li>
+                <li>Delete device</li>
+              </ul>
+            </p>
+          </div>
+        </div>
+      {% endfor %}
+      
+      {% for device in devices if device.ip_address is none%}
+        <h2>Offline</h2>
+        <ul class="devices-list">
+          <li>
+            <div>
             <img src="/static/device_icon/{{device.module_type}}.png">
             {% if device.friendly_name is not none %}
               <span class="device-name">{{ device.friendly_name }} - {{ module_names[device.module_type] }}</span>
             {% else %}
               <span class="device-name">{{ module_names[device.module_type] }}</span>
             {% endif %}
-            <span class="device-status"><i class="fa fa-cog" aria-hidden="true"></i></span>
+            <a href="#offlineModal" class="device-status"><i class="fa fa-cog" aria-hidden="true"></i></a>
             <span class="device-status device-offline">offline</span>
+            </div>
+          </li>
+        </ul>
+
+        <div id="offlineModal" class="modal-dialog">
+          <div>
+            <a href="#offlineClose" class="modal-close"><i class="fa fa-times" aria-hidden="true"></i></a>
+            <h2>Offline Modal</h2>
+            <p>
+              TODO:
+              <ul>
+                <li>Last online</li>
+                <li>Delete item</li>
+              </ul>
+            </p>
           </div>
-        </li>
+        </div>
       {% endfor %}
-      </ul>
     {% else %}
       <h2>No associated devices.</h2>
     {% endif %}
