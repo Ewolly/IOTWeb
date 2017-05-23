@@ -53,7 +53,7 @@ def infrared(device_id, feedback=[]):
         infraredDevice = iot_db.Infrared.query.get(device_id)
         if feedback != None:
             infraredDevice.feedback = feedback
-            iot_db.update _db()
+            iot_db.update_db()
 
 class DeviceHandler(LineReceiver, TimeoutMixin):
     actions = {
