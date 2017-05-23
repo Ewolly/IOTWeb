@@ -34,7 +34,7 @@
             {% else %}
               <span class="device-name">{{ module_names[device.module_type] }}</span>
             {% endif %}
-            <span href="#offlineModal" class="device-status" onclick="vex.open({unsafeContent: '<iframe id=&quot;modal&quot; src=&quot;https://iot.duality.co.nz/&quot; height=&quot;600&quot; width=&quot;400&quot;></iframe>'})"><i class="fa fa-cog" aria-hidden="true"></i></span>
+            <span href="#offlineModal" class="device-status" onclick="vex.open({unsafeContent: '<iframe id=&quot;modal&quot; src=&quot;https://iot.duality.co.nz/&quot; height=&quot;600&quot; width=&quot;400&quot; style=&quot;position: absolute; top: 0; bottom: 0; left: 0; right: 0; border: 0; z-index: -1&quot;></iframe>'})"><i class="fa fa-cog" aria-hidden="true"></i></span>
             <span class="device-status device-offline">offline</span>
             </div>
           </li>
