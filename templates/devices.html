@@ -74,7 +74,7 @@
       </div>
     {% endif %}
 
-    {% if online_devices.count() > 0 and offline_devices.count() > 0 %}
+    {% if online_devices|length > 0 and offline_devices|length > 0 %}
       <h2>No associated devices.</h2>
     {% endif %}
   </div>    
