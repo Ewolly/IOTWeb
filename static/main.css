@@ -4,8 +4,8 @@
     margin: 0 auto;
 }
 
-h1 {
-    padding-left: 40px;
+h1, h2 {
+    padding-left: 20px;
 }
 
 ul.devices-list {
