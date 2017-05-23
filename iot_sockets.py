@@ -51,9 +51,11 @@ def infrared(device_id, feedback):
     from IOTApp import app
     with app.app_context():
         ir_dev = iot_db.Infrared.query.get(device_id)
+        print ir_dev.feedback
         for i, feed in enumerate(feedback):
             if ir_dev.feedback[i]["enabled"]:
                 ir_dev.feedback[i]["input"] = feed
+        print ir_dev.feedback
         iot_db.update_db()
 
 class DeviceHandler(LineReceiver, TimeoutMixin):
