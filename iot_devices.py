@@ -17,5 +17,6 @@ def list_devices():
         flash('User does not exist.', 'error')
         return redirect(url_for('auth.login_request'), 303)
     return render_template('devices.html', 
-        devices=user.devices, 
+        online_devices=[dev for dev in user.devices if dev.ip_address is not None],
+        offline_devices=[dev for dev in user.devices if dev.ip_address is None], 
         module_names=[x.name for x in device_modules])
