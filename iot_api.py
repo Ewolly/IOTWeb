@@ -217,7 +217,8 @@ def ir_repeater(device_id, state):
         4)
     if err_msg is not None:
         return make_response(jsonify({'error': err_msg}), 400)
-
+    
+    ir_device = iot_db.Infrared.query.get(device_id)
     ir_device.repeater = state == "on"
     iot_db.update_db()
     return make_response(jsonify({'status': 'success'}), 200)
@@ -225,7 +226,7 @@ def ir_repeater(device_id, state):
 @iot_api.route('/device/<int:device_id>/ir/<int:button_id>/' + 
     '<any("start", "stop", "single"):state>', methods=['PUT'])
 def ir_button_state(device_id, button_id, state):
-    user, ir_device, err_msg = check_device(
+    user, device, err_msg = check_device(
         request.headers.get('email'), 
         request.headers.get('password'),
         device_id,
@@ -233,6 +234,7 @@ def ir_button_state(device_id, button_id, state):
     if err_msg is not None:
         return make_response(jsonify({'error': err_msg}), 400)
 
+    ir_device = iot_db.Infrared.query.get(device_id)
     if ir_device.buttons is None:
         return make_response(jsonify({'error': 'no buttons defined'}), 400)
 
@@ -250,13 +252,13 @@ def ir_button_state(device_id, button_id, state):
         return make_response(jsonify({'error': 'continuous not set'}), 400)
     elif cont:
         if state == "start" or state == "stop":
-            device_modules[ir_device.module_type].send_button(device_id, button_id, state)
+            device_modules[device.module_type].send_button(device_id, button_id, state)
             return make_response(jsonify({'status': 'success'}), 200)
         else:
             return make_response(jsonify({'error': 'expected "stop" or "start"'}), 400)
     else:
         if state == "single":
-            device_modules[ir_device.module_type].send_button(device_id, button_id, state)
+            device_modules[device.module_type].send_button(device_id, button_id, state)
             return make_response(jsonify({'status': 'success'}), 200)
         else:
             return make_response(jsonify({'error': 'expected "single"'}), 400)
