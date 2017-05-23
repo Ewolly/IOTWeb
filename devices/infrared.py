@@ -1,4 +1,5 @@
 from smartplug import Smartplug
+from iot_sockets import device_sockets
 
 class Infrared(Smartplug):
     name = 'infrared'
@@ -15,3 +16,10 @@ class Infrared(Smartplug):
                 return_dict['buttons'] = ir_device.buttons
 
         return return_dict
+
+    @staticmethod
+    def send_button(device_id, button_id, action)
+    if device_id in device_sockets:
+            device_sockets[device_id].send_message({
+                "ir_button": [button_id, action]
+            })

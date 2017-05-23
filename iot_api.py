@@ -245,19 +245,18 @@ def ir_button_state(device_id, button_id, state):
     if button is None:
         return make_response(jsonify({'error': 'button %d not defined' % button_id}), 400)
 
-    # TODO: send button.pulses
     cont = button.get("continuous")
     if cont is None:
         return make_response(jsonify({'error': 'continuous not set'}), 400)
     elif cont:
         if state == "start" or state == "stop":
-            # TODO: implement this
+            device_modules[device.module_type].send_button(device_id, button_id, state)
             return make_response(jsonify({'status': 'success'}), 200)
         else:
             return make_response(jsonify({'error': 'expected "stop" or "start"'}), 400)
     else:
         if state == "single":
-            # TODO: implement this
+            device_modules[device.module_type].send_button(device_id, button_id, state)
             return make_response(jsonify({'status': 'success'}), 200)
         else:
             return make_response(jsonify({'error': 'expected "single"'}), 400)
