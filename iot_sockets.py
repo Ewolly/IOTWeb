@@ -49,7 +49,7 @@ def power_resp(device_id, plug_status):
 
 def infrared(device_id, feedback):
     from IOTApp import app
-    with app.appcontext():
+    with app.app_context():
         infraredDevice = iot_db.Infrared.query.get(device_id)
         infraredDevice.feedback = feedback
         iot_db.update_db()
