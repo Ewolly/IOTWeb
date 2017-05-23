@@ -7,6 +7,10 @@
       <title>{% block title %}{% endblock %} - IOTBox</title>
       <script src="https://use.fontawesome.com/7b8810f687.js"></script>
       <link rel="stylesheet" href="https://unpkg.com/purecss@0.6.2/build/pure-min.css" integrity="sha384-UQiGfs9ICog+LwheBSRCt1o5cbyKIHbwjWscjemyBMT9YCUMZffs6UqUTd0hObXD" crossorigin="anonymous">
+      <script src="https://cdnjs.cloudflare.com/ajax/libs/vex-js/3.1.1/js/vex.combined.min.js" integrity="sha256-H9ekWOkL3LfgvoPQ7IUVEpaLPbPH05vETReIKbUJWUg=" crossorigin="anonymous"></script>
+      <script>vex.defaultOptions.className = 'vex-theme-os'</script>
+      <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/vex-js/3.1.1/css/vex.min.css" integrity="sha256-vT3Ea/TUa31pD4JeYO4GMsAKW9PlqG9l8d33SLPIKaw=" crossorigin="anonymous" />
+      <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/vex-js/3.1.1/css/vex-theme-os.min.css" integrity="sha256-xK3QvNOCJ17izA2HaEC1oy9dKdEm8dbgTGZksqSllPQ=" crossorigin="anonymous" />
       <link rel="stylesheet" href="{{ url_for('static', filename='main.css') }}"
     </head>    
     {% endblock %}
