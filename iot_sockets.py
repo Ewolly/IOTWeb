@@ -26,6 +26,7 @@ def keepalive(device_id, current_consumption=None):
             iot_db.update_db()
     return False, {'info': 'kept alive'}
 
+
 # closes the connection safely
 def disconnect(device_id):
     return True, {'info': 'connection closed (disconnect)'}
@@ -46,6 +47,14 @@ def power_resp(device_id, plug_status):
         device.plug_status = plug_status
         iot_db.update_db()
 
+def infrared(device_id, feedback=[]):
+    from IOTApp import app
+    with app.appcontext():
+        infraredDevice = iot_db.Infrared.query.get(device_id)
+        if feedback != None:
+            infraredDevice.feedback = feedback
+            iot_db.update _db()
+
 class DeviceHandler(LineReceiver, TimeoutMixin):
     actions = {
         'keepalive': keepalive,
@@ -55,6 +64,7 @@ class DeviceHandler(LineReceiver, TimeoutMixin):
 
     responses = {
         'power': power_resp,
+        'infrared': infrared
     }
 
     def __init__(self, devices):
