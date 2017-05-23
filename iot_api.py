@@ -30,8 +30,7 @@ def list_devices():
             'friendly_name': device.friendly_name,
             'module_type': device.module_type,
             'online': device.ip_address is not None,
-            'url': url_for('.device_info', 
-                device_id = device.device_id, _external=True)
+            'url': 'https://iot.duality.co.nz/api/1/device/%d/info' % device.device_id
         })
     return make_response(jsonify(response), 200)
 
@@ -52,9 +51,8 @@ def device_details():
             'online': device.ip_address is not None,
             'first_connected': device.first_connected,
             'last_checked': device.last_checked,
-            'url': url_for('.device_info', 
-                device_id = device.device_id, _external=True)
-        }
+            'url': 'https://iot.duality.co.nz/api/1/device/%d/info' % device.device_id
+                    }
         if device.module_type == 4: # infrared
             details = device_modules[4].device_details(device,
                 iot_db.Infrared.query.get(device.device_id))
@@ -134,8 +132,7 @@ def register_device():
     return make_response(jsonify({
         'device_id': new_device.device_id,
         'token': str(new_device.token),
-        'device_url': url_for('.device_info', 
-                device_id = new_device.device_id, _external=True)
+        'device_url': 'https://iot.duality.co.nz/api/1/device/%d/info' % device.device_id
         }), 200)
 
 @iot_api.route('/device/<int:device_id>/deregister', methods=['DELETE'])
