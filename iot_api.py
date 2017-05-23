@@ -51,6 +51,8 @@ def device_details():
             'online': device.ip_address is not None,
             'first_connected': device.first_connected,
             'last_checked': device.last_checked,
+            'client_id': device.client_id,
+            'client_name': device.client.friendly_name if device.client is not None else None,
             'url': url_for('.device_info', device_id = device.device_id, _external=True)
         }
         if device.module_type == 4: # infrared
