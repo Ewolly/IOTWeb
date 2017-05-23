@@ -39,7 +39,6 @@ class Clients(db.Model):
     user_id = db.Column(db.Integer, db.ForeignKey('users.user_id'))
     ip_address = db.Column(pg.INET)
     port = db.Column(db.Integer)
-    mac_address = db.Column(pg.MACADDR)
     friendly_name = db.Column(db.String(15))
     first_connected = db.Column(db.DateTime)
     last_connected = db.Column(db.DateTime)
