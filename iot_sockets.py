@@ -55,8 +55,12 @@ def infrared(device_id, feedback):
         for i, feed in enumerate(feedback):
             if ir_dev.feedback[i]["enabled"]:
                 newlist.append({"enabled": True, "input": feed})
+                if ir_dev.feedback[i]["name"] is not None:
+                    newlist[i]["name"] = ir_dev.feedback[i]["name"]
             else:
                 newlist.append({"enabled": False})
+                if ir_dev.feedback[i]["name"] is not None:
+                    newlist[i]["name"] = ir_dev.feedback[i]["name"]
         ir_dev.feedback = newlist
         iot_db.update_db()
 
