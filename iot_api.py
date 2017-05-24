@@ -187,6 +187,23 @@ def connect_device(device_id):
 
     return make_response(jsonify({'status': 'success'}), 200)
 
+@iot_api.route('/device/<int:device_id>/connect/status', methods=['GET'])
+    user, device, err_msg = check_device(
+        request.headers.get('email'), 
+        request.headers.get('password'),
+        device_id)
+    if err_msg is not None:
+        return make_response(jsonify({'error': err_msg}), 400)
+
+    return make_response(jsonify({
+        'status': 'success',
+        'details': {
+            'ip_address': '192.168.0.137',
+            'port': 12345,
+        }
+    }), 200)
+
+
 @iot_api.route('/device/<int:device_id>/disconnect', methods=['DELETE'])
 def disconnect_device(device_id):
     pass
