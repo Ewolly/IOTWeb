@@ -135,7 +135,7 @@ def register_device():
     return make_response(jsonify({
         'device_id': new_device.device_id,
         'token': str(new_device.token),
-        'device_url': url_for('.device_info', device_id = device.device_id, _external=True)
+        'device_url': url_for('.device_info', device_id = new_device.device_id, _external=True)
         }), 200)
 
 @iot_api.route('/device/<int:device_id>/deregister', methods=['DELETE'])
