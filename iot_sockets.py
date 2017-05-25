@@ -65,6 +65,7 @@ def infrared(device_id, feedback):
         iot_db.update_db()
 
 def server_setup(device_id, ip, port):
+    print 'server_thread'
     from IOTApp import app
     with app.app_context():
         device = iot_db.Devices.query.get(device_id)
@@ -244,6 +245,7 @@ class DeviceHandler(LineReceiver, TimeoutMixin):
             return
 
     def handle_RESPONSE(self, response, kwargs):
+        print 'response'
         try:
             # call response with device_id and kwargs
             self.responses[response](self.device_id, **kwargs)
