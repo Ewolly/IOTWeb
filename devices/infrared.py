@@ -23,3 +23,8 @@ class Infrared(Smartplug):
             device_sockets[device_id].send_message({
                 "ir_button": [button_id, action]
             })
+
+    @classmethod
+    def start_server(self, device_id, ir_device):
+        super(Infrared, self).device_details(device_id, 'infrared')
+        ir_device.connecting = 1

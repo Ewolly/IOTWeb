@@ -185,7 +185,31 @@ def connect_device(device_id):
     if err_msg is not None:
         return make_response(jsonify({'error': err_msg}), 400)
 
-    return make_response(jsonify({'status': 'success'}), 200)
+    connection_data = request.get_json(silent=True)
+    if connection_data is None:
+        return make_response(jsonify({'error': 'error parsing json'}), 400)
+
+    for field in ['localIP', 'hostname']:
+        if field not in connection_data:
+            return make_response(jsonify({'error': 'missing field: %s' % field}), 200)
+
+    local_ip = connection_data['localIP']
+    hostname = connection_data['hostname']
+    if 'client_id' in connection_data:
+        client = iot_db.Clients.query.get(connection_data['client_id'])
+        if client == none:
+            return make_response(jsonify({'error': 'client_id does not exist'}), 400)
+        if client.user_id != user.user_id:
+            return make_response(jsonify({'error': 'user does not have permission for this client'}), 400)
+        client.ip_address = local_ip
+        client.friendly_name = hostname
+        client.last_checked = datetime.utcnow()
+    else:
+        client = iot_db.Clients(user.user_id, local_ip, hostname)
+
+    device_modules[device.module_type].start_server(device, device_modules[device.module_type].name);
+
+    return make_response(jsonify({'status': 'success', 'client_id': client_id}), 200)
 
 @iot_api.route('/device/<int:device_id>/connect/status', methods=['GET'])
 def connect_status(device_id):
@@ -196,14 +220,17 @@ def connect_status(device_id):
     if err_msg is not None:
         return make_response(jsonify({'error': err_msg}), 400)
 
-    return make_response(jsonify({
-        'status': 'success',
-        'details': {
-            'ip_address': '192.168.0.137',
-            'port': 12345,
-        }
-    }), 200)
-
+    if device.connecting == 0:              # not connecting
+        return make_response(jsonify({'status': 'failure', 'details': {'error_message': 'device not starting server'}}))
+    elif device.connecting == 1:            # connecting
+        return make_response(jsonify({'status': 'connecting'}), 200)
+    elif device.connecting == 2:            # connected
+        return make_response(jsonify({
+            'status': success,
+            'details': {
+                'ip_address': device.ip_address,
+                'port': device.port
+            }}))
 
 @iot_api.route('/device/<int:device_id>/disconnect', methods=['DELETE'])
 def disconnect_device(device_id):

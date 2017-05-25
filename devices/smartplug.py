@@ -15,3 +15,9 @@ class Smartplug(object):
     def set_plug(device_id, status):
         if device_id in device_sockets:
             device_sockets[device_id].send_message({"power": status})
+
+    @staticmethod
+    def start_server(device, module_name):
+        if device.device_id in device_sockets:
+            device_sockets[device.device_id].send_message({"server": module_name})
+            device.connecting = 1

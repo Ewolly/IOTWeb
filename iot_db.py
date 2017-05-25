@@ -48,13 +48,11 @@ class Clients(db.Model):
     devices = db.relationship('Devices', backref='client',
         lazy='dynamic')
 
-    def __init__(self, user_id, ip_address, port, mac_address,
-        friendly_name=None):
+    def __init__(self, user_id, ip_address, friendly_name):
         self.user_id = user_id
         self.ip_address = ip_address
-        self.port = port
-        self.mac_address = mac_address
         self.friendly_name = friendly_name
+        self.first_connected = self.last_checked = datetime.utcnow()
 
 class Devices(db.Model):
     device_id = db.Column(db.Integer,
@@ -70,6 +68,7 @@ class Devices(db.Model):
     token = db.Column(pg.UUID)
     current_consumption = db.Column(db.Numeric)
     plug_status = db.Column(db.Boolean)
+    connecting = db.Column(db.Numeric)
 
     def __init__(self, user_id, module_type, ip_address, port, 
         friendly_name=None):
@@ -81,6 +80,7 @@ class Devices(db.Model):
         self.plug_status = False
         self.first_connected = self.last_checked = datetime.utcnow()
         self.token = str(uuid4())
+        self.connecting = 0
 
 class Infrared(db.Model):
     device_id = db.Column(db.Integer, primary_key=True)

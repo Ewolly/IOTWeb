@@ -64,6 +64,15 @@ def infrared(device_id, feedback):
         ir_dev.feedback = newlist
         iot_db.update_db()
 
+def server_setup(device_id, ip_address, port):
+    from IOTApp import app
+    with app.app_context():
+        device = iot_db.Devices.query.get(device_id)
+        device.connecting = 2
+        device.ip_address = ip_address
+        device.port = port
+        iot_db.update_db()
+
 class DeviceHandler(LineReceiver, TimeoutMixin):
     actions = {
         'keepalive': keepalive,
@@ -73,7 +82,8 @@ class DeviceHandler(LineReceiver, TimeoutMixin):
 
     responses = {
         'power': power_resp,
-        'infrared': infrared
+        'infrared': infrared,
+        'server_setup': server_setup,
     }
 
     def __init__(self, devices):
