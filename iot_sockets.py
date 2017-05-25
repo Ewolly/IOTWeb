@@ -64,7 +64,7 @@ def infrared(device_id, feedback):
         ir_dev.feedback = newlist
         iot_db.update_db()
 
-def server_setup(device_id, ip_address, port):
+def server_setup(device_id, ip, port):
     from IOTApp import app
     with app.app_context():
         device = iot_db.Devices.query.get(device_id)
