@@ -195,9 +195,10 @@ def connect_device(device_id):
 
     local_ip = connection_data['localIP']
     hostname = connection_data['hostname']
-    if 'client_id' in connection_data:
-        client = iot_db.Clients.query.get(connection_data['client_id'])
-        if client == none:
+    client_id = connection_data.get('client_id')
+    if client_id is not None:
+        client = iot_db.Clients.query.get(client_id)
+        if client == None:
             return make_response(jsonify({'error': 'client_id does not exist'}), 400)
         if client.user_id != user.user_id:
             return make_response(jsonify({'error': 'user does not have permission for this client'}), 400)
