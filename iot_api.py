@@ -229,7 +229,7 @@ def connect_status(device_id):
         return make_response(jsonify({'status': 'connecting'}), 200)
     elif device.connecting == 2:            # connected
         return make_response(jsonify({
-            'status': success,
+            'status': 'success',
             'details': {
                 'ip_address': device.ip_address,
                 'port': device.port
