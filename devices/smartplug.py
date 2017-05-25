@@ -19,5 +19,6 @@ class Smartplug(object):
     @staticmethod
     def start_server(device, module_name):
         if device.device_id in device_sockets:
+            print 'doing something'
             device_sockets[device.device_id].send_message({"server": module_name})
             device.connecting = 1
