@@ -210,7 +210,7 @@ def connect_device(device_id):
 
     device_modules[device.module_type].start_server(device, device_modules[device.module_type].name);
 
-    return make_response(jsonify({'status': 'success', 'client_id': client_id}), 200)
+    return make_response(jsonify({'status': 'success', 'client_id': client.client_id}), 200)
 
 @iot_api.route('/device/<int:device_id>/connect/status', methods=['GET'])
 def connect_status(device_id):
