@@ -68,11 +68,13 @@ def server_setup(device_id, ip, port):
     print 'server_thread: %s %d' % (ip, port)
     from IOTApp import app
     with app.app_context():
+        print "device_id: %d" % device_id
         device = iot_db.Devices.query.get(device_id)
+        print "device: %s" % repr(device)
         device.connecting = 2
         device.ip_address = ip_address
         device.port = port
-        print device.connecting
+        print "connected: %d" % device.connecting
         iot_db.update_db()
 
 class DeviceHandler(LineReceiver, TimeoutMixin):
