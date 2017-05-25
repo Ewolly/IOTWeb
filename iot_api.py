@@ -188,6 +188,7 @@ def connect_device(device_id):
     return make_response(jsonify({'status': 'success'}), 200)
 
 @iot_api.route('/device/<int:device_id>/connect/status', methods=['GET'])
+def connect_status(device_id):
     user, device, err_msg = check_device(
         request.headers.get('email'), 
         request.headers.get('password'),
