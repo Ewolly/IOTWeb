@@ -72,8 +72,8 @@ def server_setup(device_id, ip, port):
         device = iot_db.Devices.query.get(device_id)
         print "device: %s" % repr(device)
         device.connecting = 2
-        device.ip_address = ip_address
-        device.port = port
+        #device.ip_address = ip_address
+        #device.port = port
         print "connected: %d" % device.connecting
         iot_db.update_db()
 
