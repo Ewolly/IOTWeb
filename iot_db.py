@@ -52,7 +52,7 @@ class Clients(db.Model):
         self.user_id = user_id
         self.ip_address = ip_address
         self.friendly_name = friendly_name
-        self.first_connected = self.last_checked = datetime.utcnow()
+        self.first_connected = self.last_connected = datetime.utcnow()
 
 class Devices(db.Model):
     device_id = db.Column(db.Integer,
