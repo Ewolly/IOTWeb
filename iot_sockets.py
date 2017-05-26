@@ -69,8 +69,8 @@ def server_setup(device_id, ip, port):
     with app.app_context():
         device = iot_db.Devices.query.get(device_id)
         device.connecting = 2
-        device.ip_address = ip
-        device.port = port
+        device.local_ip = ip
+        device.local_port = port
         iot_db.update_db()
 
 class DeviceHandler(LineReceiver, TimeoutMixin):

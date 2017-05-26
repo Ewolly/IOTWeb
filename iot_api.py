@@ -231,8 +231,8 @@ def connect_status(device_id):
         return make_response(jsonify({
             'status': 'success',
             'details': {
-                'ip_address': device.ip_address,
-                'port': device.port
+                'ip_address': device.local_ip,
+                'port': device.local_port
             }}))
 
 @iot_api.route('/device/<int:device_id>/disconnect', methods=['DELETE'])

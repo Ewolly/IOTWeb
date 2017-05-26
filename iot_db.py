@@ -68,7 +68,9 @@ class Devices(db.Model):
     token = db.Column(pg.UUID)
     current_consumption = db.Column(db.Numeric)
     plug_status = db.Column(db.Boolean)
-    connecting = db.Column(db.Numeric)
+    connecting = db.Column(db.Integer)
+    local_ip = db.Column(pg.INET)
+    local_port = db.Column(db.Integer)
 
     def __init__(self, user_id, module_type, ip_address, port, 
         friendly_name=None):
