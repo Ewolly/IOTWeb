@@ -110,7 +110,7 @@ def update_buttons(device_id):
         new_array.append({
             "id" : int(button_id),
             "name": button_name,
-            "continuous" : false,
+            "continuous" : False,
             "pulses" : 2
             })
 
