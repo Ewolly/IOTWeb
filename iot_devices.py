@@ -188,7 +188,7 @@ def delete_button(device_id, button_id):
 
 
     new_list = []
-    for button_old in ir_device.buttons:
+    for button_old in ir_device.buttons[:]:
         if button_id != button_old["id"]:
             new_list.append(button_old)
     ir_device.buttons = new_list
