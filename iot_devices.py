@@ -56,10 +56,14 @@ def update_sensors(device_id):
     if ir_device is None:
         flash('Device does not exist', 'warning')
         return redirect(url_for('auth.login_request'), 303)
-    if ir_device not in user.Infrared:
+    for  dev in user.devices   
+        if dev.device_id == device_id:
+            break
+    else:
         #check
         flash('Permission denied', 'error')
         return redirect(url_for('.list_devices'), 303)
+    
     sensor_data = request.get_json(silent=True)
     if sensor_data is None:
         return make_response(jsonify({'error': 'missing field: %s' % field}), 200)
