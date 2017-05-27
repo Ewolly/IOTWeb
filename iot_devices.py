@@ -145,17 +145,17 @@ def add_button(device_id):
         return make_response(jsonify({'error': 'missing field: %s' % field}), 200)
 
     for button_old in ir_device.buttons:
-        if int(button_update["id"]) == button_old["id"]:
+        if button_update["id"] == button_old["id"]:
             flash('id already in use', 'warning')
             return redirect(url_for('.list_devices'), 303)
-    new_buttons = ir_device.buttons
-    new_buttons.append({
+    new_but = ir_device.buttons[:]
+    new_but.append({
         "id" : int(button_update["id"]),
         "name": button_update["name"],
         "continuous" : False,
         "pulses" : 2
         })
-    ir_device.buttons = new_buttons
+    ir_device.buttons = new_but
     iot_db.update_db()
     return redirect(url_for('.list_devices'), 303)
 
