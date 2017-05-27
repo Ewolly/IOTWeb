@@ -148,7 +148,7 @@ def add_button(device_id):
         if int(button_update["id"]) == button_old["id"]:
             flash('id already in use', 'warning')
             return redirect(url_for('.list_devices'), 303)
-    ir.device.buttons.append({
+    ir_device.buttons.append({
         "id" : int(button_update["id"]),
         "name": button_update["name"],
         "continuous" : False,
