@@ -70,6 +70,7 @@ def update_sensors(device_id):
 
 @iot_devices.route('/device/<int:device_id>/buttons/update', methods=['POST'])
 def update_buttons(device_id):
+    pass
     # connection_data = request.get_json(silent=True)
     # if connection_data is None:
     #     return make_response(jsonify({'error': 'error parsing json'}), 400)
@@ -81,4 +82,5 @@ def update_buttons(device_id):
 
 @iot_devices.route('/device/<int:device_id>/buttons/add', methods=['POST'])
 def add_button(device_id):
+    pass
 
