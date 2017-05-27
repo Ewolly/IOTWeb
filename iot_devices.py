@@ -106,12 +106,12 @@ def update_buttons(device_id):
         return make_response(jsonify({'error': 'missing field: %s' % field}), 200)
     
     new_array = []
-    for button_id, button_name in button_data.iterkeys():
+    for button_id, button_name in button_data.iteritems():
         new_array.append({
             "id" : int(button_id),
-             "name": button_name,
-             "continuous" : false,
-             "pulses" : 2
+            "name": button_name,
+            "continuous" : false,
+            "pulses" : 2
             })
 
     ir_device.buttons = new_array
