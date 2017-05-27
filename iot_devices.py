@@ -117,6 +117,7 @@ def update_buttons(device_id):
 
 @iot_devices.route('/device/<int:device_id>/buttons/add', methods=['POST'])
 def add_button(device_id):
+    pass
     # button_data = request.get_json(silent=True)
     # if button_data is None:
     #     return make_response(jsonify({'error': 'missing field: %s' % field}), 200)
