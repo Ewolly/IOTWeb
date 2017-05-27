@@ -31,7 +31,7 @@ def update_friendly_name(device_id, new_name):
     if user is None:
         flash('User does not exist.', 'error')
         return redirect(url_for('auth.login_request'), 303)
-    device = user.Devices.query.get(device_id)
+    device = iot_db.Devices.query.get(device_id)
     if device is None:
         flash('Device does not exist', 'warning')
         return redirect(url_for('auth.login_request'), 303)
