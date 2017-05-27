@@ -160,3 +160,37 @@ def add_button(device_id):
     return redirect(url_for('.list_devices'), 303)
 
 
+@iot_devices.route('/device/<int:device_id>/button/<int:button_id>/delete', methods=['DELETE'])
+def delete_button(device_id, button_id):
+    user_id = session.get('id')
+    if user_id is None:
+        flash('Please login.', 'warning')
+        return redirect(url_for('auth.login_request'), 303)
+    user = iot_db.Users.query.get(user_id)
+    if user is None:
+        flash('User does not exist.', 'error')
+        return redirect(url_for('auth.login_request'), 303)
+    ir_device = iot_db.Infrared.query.get(device_id)
+    if ir_device is None:
+        flash('Device does not exist', 'warning')
+        return redirect(url_for('auth.login_request'), 303)
+    for  dev in user.devices:   
+        if dev.device_id == device_id:
+            break
+    else:
+        #check
+        flash('Permission denied', 'error')
+        return redirect(url_for('.list_devices'), 303)
+
+    button_delete = request.get_json(silent=True)
+    if button_delete is None:
+        return make_response(jsonify({'error': 'missing field: %s' % field}), 200)
+
+
+    new_list = []
+    for button_old in ir_device.buttons:
+        if button_delete["id"] != button_old["id"]:
+            new_list.append(button_old)
+    ir_device.buttons = new_list
+    iot_db.update_db()
+    return redirect(url_for('.list_devices'), 303)
