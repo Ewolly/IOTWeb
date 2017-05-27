@@ -56,7 +56,7 @@ def update_sensors(device_id):
     if ir_device is None:
         flash('Device does not exist', 'warning')
         return redirect(url_for('auth.login_request'), 303)
-    for  dev in user.devices   
+    for  dev in user.devices:   
         if dev.device_id == device_id:
             break
     else:
