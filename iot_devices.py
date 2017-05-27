@@ -38,7 +38,7 @@ def update_friendly_name(device_id, new_name):
     if device not in user.devices:
         flash('Permission denied', 'error')
         return redirect(url_for('.list_devices'), 303)
-    dev.friendly_name = new_name
+    device.friendly_name = new_name
     iot_db.update_db()
     return redirect(url_for('.list_devices'), 303)
 
