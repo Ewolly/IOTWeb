@@ -20,3 +20,66 @@ def list_devices():
         online_devices=[dev for dev in user.devices if dev.ip_address is not None],
         offline_devices=[dev for dev in user.devices if dev.ip_address is None], 
         module_names=[x.name for x in device_modules])
+
+@iot_devices.route('/device/<int:device_id>/name/<new_name>', methods=['POST'])
+def update_friendly_name(device_id, new_name):
+    user_id = session.get('id')
+    if user_id is None:
+        flash('Please login.', 'warning')
+        return redirect(url_for('auth.login_request'), 303)
+    user = iot_db.Users.query.get(user_id)
+    if user is None:
+        flash('User does not exist.', 'error')
+        return redirect(url_for('auth.login_request'), 303)
+    device = user.Devices.query.get(device_id)
+    if device is None:
+        flash('Device does not exist', 'warning')
+        return redirect(url_for('auth.login_request'), 303)
+    if device not in user.devices:
+        flash('Permission denied', 'error')
+        return redirect(url_for('.list_devices'), 303)
+    dev.friendly_name = new_name
+    iot_db.update_db()
+    return redirect(url_for('.list_devices'), 303)
+
+@iot_devices.route('/device/<int:device_id>/sensors/update', methods=['POST'])
+def update_sensors(device_id):
+    user_id = session.get('id')
+    if user_id is None:
+        flash('Please login.', 'warning')
+        return redirect(url_for('auth.login_request'), 303)
+    user = iot_db.Users.query.get(user_id)
+    if user is None:
+        flash('User does not exist.', 'error')
+        return redirect(url_for('auth.login_request'), 303)
+    device = user.Devices.query.get(device_id)
+    if device is None:
+        flash('Device does not exist', 'warning')
+        return redirect(url_for('auth.login_request'), 303)
+    if device not in user.devices:
+        #check
+        flash('Permission denied', 'error')
+        return redirect(url_for('.list_devices'), 303)
+    sensor_data = request.get_json(silent=True)
+    if sensor_data is None:
+        return make_response(jsonify({'error': 'missing field: %s' % field}), 200)
+    for array in sensor_data:
+
+    return redirect(url_for('.list_devices'), 303)
+
+
+
+@iot_devices.route('/device/<int:device_id>/buttons/update', methods=['POST'])
+def update_buttons(device_id):
+    # connection_data = request.get_json(silent=True)
+    # if connection_data is None:
+    #     return make_response(jsonify({'error': 'error parsing json'}), 400)
+
+    # for field in ['localIP', 'hostname']:
+    #     if field not in connection_data:
+    #         return make_response(jsonify({'error': 'missing field: %s' % field}), 200)
+    return redirect(url_for('.list_devices'), 303)
+
+@iot_devices.route('/device/<int:device_id>/buttons/add', methods=['POST'])
+def add_button(device_id):
+
