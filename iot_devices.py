@@ -148,12 +148,14 @@ def add_button(device_id):
         if int(button_update["id"]) == button_old["id"]:
             flash('id already in use', 'warning')
             return redirect(url_for('.list_devices'), 303)
-    ir_device.buttons.append({
+    new_buttons = ir_device.buttons
+    new_buttons.append({
         "id" : int(button_update["id"]),
         "name": button_update["name"],
         "continuous" : False,
         "pulses" : 2
         })
+    ir_device.buttons = new_buttons
     iot_db.update_db()
     return redirect(url_for('.list_devices'), 303)
 
