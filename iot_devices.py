@@ -108,9 +108,9 @@ def update_buttons(device_id):
     new_array = []
     for button_id, button_name in button_data.iterkeys():
         new_array.append({
-            "id" : int(button_id)
-             "name": button_name
-             "continuous" : false
+            "id" : int(button_id),
+             "name": button_name,
+             "continuous" : false,
              "pulses" : 2
             })
 
