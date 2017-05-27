@@ -21,7 +21,7 @@ def list_devices():
         offline_devices=[dev for dev in user.devices if dev.ip_address is None], 
         module_names=[x.name for x in device_modules])
 
-@iot_devices.route('/device/<int:device_id>/name/<new_name>', methods=['POST'])
+@iot_devices.route('/device/<int:device_id>/name/<new_name>', methods=['GET', 'POST'])
 def update_friendly_name(device_id, new_name):
     user_id = session.get('id')
     if user_id is None:
