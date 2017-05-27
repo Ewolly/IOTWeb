@@ -21,7 +21,7 @@ def list_devices():
         offline_devices=[dev for dev in user.devices if dev.ip_address is None], 
         module_names=[x.name for x in device_modules])
 
-@iot_devices.route('/device/<int:device_id>/name/<new_name>', methods=['GET', 'POST'])
+@iot_devices.route('/device/<int:device_id>/name/<new_name>', methods=['POST'])
 def update_friendly_name(device_id, new_name):
     user_id = session.get('id')
     if user_id is None:
@@ -52,19 +52,26 @@ def update_sensors(device_id):
     if user is None:
         flash('User does not exist.', 'error')
         return redirect(url_for('auth.login_request'), 303)
-    device = user.Devices.query.get(device_id)
-    if device is None:
+    ir_device = user.Infrared.query.get(device_id)
+    if ir_device is None:
         flash('Device does not exist', 'warning')
         return redirect(url_for('auth.login_request'), 303)
-    if device not in user.devices:
+    if ir_device not in user.Infrared:
         #check
         flash('Permission denied', 'error')
         return redirect(url_for('.list_devices'), 303)
     sensor_data = request.get_json(silent=True)
     if sensor_data is None:
         return make_response(jsonify({'error': 'missing field: %s' % field}), 200)
-    for array in sensor_data:
-        return redirect(url_for('.list_devices'), 303)
+    out_array = []
+    for enabled, name in sensor_data:
+        out_array.append({
+            "enabled": enabled,
+            "name": name
+            })
+    ir_device.feedback = out_array
+    iot_db.update_db()
+    return redirect(url_for('.list_devices'), 303)
 
 
 
