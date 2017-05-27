@@ -64,8 +64,7 @@ def update_sensors(device_id):
     if sensor_data is None:
         return make_response(jsonify({'error': 'missing field: %s' % field}), 200)
     for array in sensor_data:
-
-    return redirect(url_for('.list_devices'), 303)
+        return redirect(url_for('.list_devices'), 303)
 
 
 
