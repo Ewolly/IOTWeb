@@ -81,17 +81,47 @@ def update_sensors(device_id):
 
 @iot_devices.route('/device/<int:device_id>/buttons/update', methods=['POST'])
 def update_buttons(device_id):
-    pass
-    # connection_data = request.get_json(silent=True)
-    # if connection_data is None:
-    #     return make_response(jsonify({'error': 'error parsing json'}), 400)
+    user_id = session.get('id')
+    if user_id is None:
+        flash('Please login.', 'warning')
+        return redirect(url_for('auth.login_request'), 303)
+    user = iot_db.Users.query.get(user_id)
+    if user is None:
+        flash('User does not exist.', 'error')
+        return redirect(url_for('auth.login_request'), 303)
+    ir_device = iot_db.Infrared.query.get(device_id)
+    if ir_device is None:
+        flash('Device does not exist', 'warning')
+        return redirect(url_for('auth.login_request'), 303)
+    for  dev in user.devices:   
+        if dev.device_id == device_id:
+            break
+    else:
+        #check
+        flash('Permission denied', 'error')
+        return redirect(url_for('.list_devices'), 303)
 
-    # for field in ['localIP', 'hostname']:
-    #     if field not in connection_data:
-    #         return make_response(jsonify({'error': 'missing field: %s' % field}), 200)
+    button_data = request.get_json(silent=True)
+    if button_data is None:
+        return make_response(jsonify({'error': 'missing field: %s' % field}), 200)
+    
+    new_array = []
+    for button_id, button_name in button_data.iterkeys():
+        new_array.append({
+            int(button_id) : button_name
+            })
+
+    ir_device.buttons = new_array
+    iot_db.update_db()
     return redirect(url_for('.list_devices'), 303)
 
 @iot_devices.route('/device/<int:device_id>/buttons/add', methods=['POST'])
 def add_button(device_id):
-    pass
+    # button_data = request.get_json(silent=True)
+    # if button_data is None:
+    #     return make_response(jsonify({'error': 'missing field: %s' % field}), 200)
+    # for new_button_id in button_data:
+    #     for button_dict in ir_device.buttons:
+    #         if int(new_button_id) == old_button_id:
+    #             ir_device.buttons[old_button_id] = buttondata[new_button_id]
 
