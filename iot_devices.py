@@ -145,7 +145,7 @@ def add_button(device_id):
         return make_response(jsonify({'error': 'missing field: %s' % field}), 200)
 
     for button_old in ir_device.buttons:
-        if int(button_update["id"]) == button_old[id]:
+        if int(button_update["id"]) == button_old["id"]:
             flash('id already in use', 'warning')
             return redirect(url_for('.list_devices'), 303)
     ir.device.buttons.append({
