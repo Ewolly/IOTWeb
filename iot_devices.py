@@ -52,7 +52,7 @@ def update_sensors(device_id):
     if user is None:
         flash('User does not exist.', 'error')
         return redirect(url_for('auth.login_request'), 303)
-    ir_device = user.Infrared.query.get(device_id)
+    ir_device = iot_db.Infrared.query.get(device_id)
     if ir_device is None:
         flash('Device does not exist', 'warning')
         return redirect(url_for('auth.login_request'), 303)
