@@ -206,6 +206,7 @@ def connect_device(device_id):
         client.ip_address = local_ip
         client.friendly_name = hostname
         client.last_checked = datetime.utcnow()
+        iot_db.update_db()
     else:
         client = iot_db.Clients(user.user_id, local_ip, hostname)
         iot_db.add_to_db(client)
