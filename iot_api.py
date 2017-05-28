@@ -237,7 +237,24 @@ def connect_status(device_id):
 
 @iot_api.route('/device/<int:device_id>/disconnect', methods=['DELETE'])
 def disconnect_device(device_id):
-    pass
+    user, device, err_msg = check_device(
+    request.headers.get('email'), 
+    request.headers.get('password'),
+    device_id)
+    if err_msg is not None:
+        return make_response(jsonify({'error': err_msg}), 400)
+
+    if device.connected == 0 or device.client_id == None:
+        device.client_id = None
+        device.local_ip = None
+        device.port = None
+        device.connected = 0
+        iot_db.update_db()
+        return make_response(jsonify({'status': 'success'}), 200)
+
+    device_modules[device.module_type].stop_server(device)
+    return make_response(jsonify({'status': 'success'}), 200)
+
 
 @iot_api.route('/device/update', methods=['POST'])
 def update_device():

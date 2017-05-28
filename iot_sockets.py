@@ -36,7 +36,6 @@ def disconnect(device_id):
 def echo_text(device_id, text):
     return False, {'echo': str(text).upper()}
 
-# TODO: move to appropriate places
 # ----------------
 # device responses
 # ----------------
@@ -73,6 +72,16 @@ def server_setup(device_id, ip, port):
         device.local_port = port
         iot_db.update_db()
 
+def server_stopped(device_id):
+    from IOTApp import app
+    with app.app_context():
+        device = iot_db.Devices.query.get(device_id)
+        device.connecting = 0
+        device.local_ip = None
+        device.local_port = None
+        device.client_id = None
+        iot_db.update_db()
+
 class DeviceHandler(LineReceiver, TimeoutMixin):
     actions = {
         'keepalive': keepalive,
@@ -84,6 +93,7 @@ class DeviceHandler(LineReceiver, TimeoutMixin):
         'power': power_resp,
         'infrared': infrared,
         'server_setup': server_setup,
+        'server_stopped': server_stopped
     }
 
     def __init__(self, devices):
