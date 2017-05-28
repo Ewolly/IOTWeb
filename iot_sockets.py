@@ -113,7 +113,16 @@ class DeviceHandler(LineReceiver, TimeoutMixin):
     def connectionLost(self, reason):
         if self.device_id in self.devices:
             # TODO: disconnect device
+            from IOTApp import app
+            with app.app_context():
+                device = iot_db.Devices.query.get(self.device_id)
+                device.connecting = 0
+                device.local_ip = None
+                device.local_port = None
+                device.client_id = None
+                iot_db.update_db()
             del self.devices[self.device_id]
+
 
     def lineReceived(self, line):
         if self.state == 'PROXY':
