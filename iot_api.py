@@ -202,14 +202,14 @@ def connect_device(device_id):
             return make_response(jsonify({'error': 'client_id does not exist'}), 400)
         if client.user_id != user.user_id:
             return make_response(jsonify({'error': 'user does not have permission for this client'}), 400)
-        device.client_id = client_id 
         client.ip_address = local_ip
         client.friendly_name = hostname
         client.last_checked = datetime.utcnow()
-        iot_db.update_db()
     else:
         client = iot_db.Clients(user.user_id, local_ip, hostname)
         iot_db.add_to_db(client)
+
+    device.client_id = client.client_id 
 
     device_modules[device.module_type].start_server(device, device_modules[device.module_type].name);
     iot_db.update_db()
