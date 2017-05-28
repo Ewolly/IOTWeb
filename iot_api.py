@@ -208,7 +208,7 @@ def connect_device(device_id):
     else:
         client = iot_db.Clients(user.user_id, local_ip, hostname)
         iot_db.add_to_db(client)
-
+    iot_db.update_db()
     device.client_id = client.client_id 
 
     device_modules[device.module_type].start_server(device, device_modules[device.module_type].name);
