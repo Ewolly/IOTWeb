@@ -256,7 +256,10 @@ class DeviceHandler(LineReceiver, TimeoutMixin):
     def handle_RESPONSE(self, response, kwargs):
         try:
             # call response with device_id and kwargs
-            self.responses[response](self.device_id, **kwargs)
+            if kwargs == None:
+                self.responses[response](self.device_id)
+            else:
+                self.responses[response](self.device_id, **kwargs)
         except Exception as e:
             # write the message of any error out and disconnect
             # TODO: remove, for debugging
