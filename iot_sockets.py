@@ -47,11 +47,11 @@ def power_resp(device_id, plug_status):
         iot_db.update_db()
 
 def power_state(device_id):
-from IOTApp import app
-with app.app_context():
-    device = iot_db.Devices.query.get(device_id)
-    device.plug_status = False
-    iot_db.update_db;
+    from IOTApp import app
+    with app.app_context():
+        device = iot_db.Devices.query.get(device_id)
+        device.plug_status = False
+        iot_db.update_db;
 
 def infrared(device_id, feedback):
     from IOTApp import app
