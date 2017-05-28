@@ -213,6 +213,7 @@ class DeviceHandler(LineReceiver, TimeoutMixin):
         self.state = 'MSG'
 
     def handle_MESSAGE(self, line):
+        
         from IOTApp import app
         with app.app_context():
             device = iot_db.Devices.query.get(self.device_id)
