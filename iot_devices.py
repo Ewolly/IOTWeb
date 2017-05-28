@@ -183,11 +183,6 @@ def delete_button(device_id, button_id):
         flash('Permission denied', 'error')
         return redirect(url_for('.list_devices'), 303)
 
-    # button_delete = request.get_json(silent=True)
-    # if button_delete is None:
-    #     return make_response(jsonify({'error': 'missing field: %s' % field}), 200)
-
-
     new_list = []
     for button_old in ir_device.buttons:
         if button_id != button_old["id"]:

@@ -206,6 +206,10 @@ class DeviceHandler(LineReceiver, TimeoutMixin):
             iot_db.update_db()
         self.devices[self.device_id] = self
         self.sendLine(self.info('successfully authenticated'))
+        from IOTApp import app
+        with app.app_context():
+            device = iot_db.Devices.query.get(self.device_id)
+            self.sendLine(json.dumps({'power': device.plug_status}))
         self.state = 'MSG'
 
     def handle_MESSAGE(self, line):
