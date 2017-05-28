@@ -202,6 +202,7 @@ def connect_device(device_id):
             return make_response(jsonify({'error': 'client_id does not exist'}), 400)
         if client.user_id != user.user_id:
             return make_response(jsonify({'error': 'user does not have permission for this client'}), 400)
+        device.client_id = client_id 
         client.ip_address = local_ip
         client.friendly_name = hostname
         client.last_checked = datetime.utcnow()
@@ -224,6 +225,8 @@ def connect_status(device_id):
         return make_response(jsonify({'error': err_msg}), 400)
 
     if device.connecting == 0:              # not connecting
+        device.client_id = None
+        iot_db.update_db()
         return make_response(jsonify({'status': 'failure', 'details': {'error_message': 'device not starting server'}}))
     elif device.connecting == 1:            # connecting
         return make_response(jsonify({'status': 'connecting'}), 200)
