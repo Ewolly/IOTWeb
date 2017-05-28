@@ -244,11 +244,11 @@ def disconnect_device(device_id):
     if err_msg is not None:
         return make_response(jsonify({'error': err_msg}), 400)
 
-    if device.connected == 0 or device.client_id == None:
+    if device.connecting == 0 or device.client_id == None:
         device.client_id = None
         device.local_ip = None
         device.port = None
-        device.connected = 0
+        device.connecting = 0
         iot_db.update_db()
         return make_response(jsonify({'status': 'success'}), 200)
 
