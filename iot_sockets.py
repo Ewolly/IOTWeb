@@ -46,6 +46,13 @@ def power_resp(device_id, plug_status):
         device.plug_status = plug_status
         iot_db.update_db()
 
+def power_state(device_id):
+from IOTApp import app
+with app.app_context():
+    device = iot_db.Devices.query.get(device_id)
+    device.plug_status = False
+    iot_db.update_db;
+
 def infrared(device_id, feedback):
     from IOTApp import app
     with app.app_context():
@@ -90,6 +97,7 @@ class DeviceHandler(LineReceiver, TimeoutMixin):
     }
 
     responses = {
+        'power_state': power_state,
         'power': power_resp,
         'infrared': infrared,
         'server_setup': server_setup,
@@ -206,10 +214,6 @@ class DeviceHandler(LineReceiver, TimeoutMixin):
             iot_db.update_db()
         self.devices[self.device_id] = self
         self.sendLine(self.info('successfully authenticated'))
-        from IOTApp import app
-        with app.app_context():
-            device = iot_db.Devices.query.get(self.device_id)
-            self.sendLine(json.dumps({'power': device.plug_status}))
         self.state = 'MSG'
 
     def handle_MESSAGE(self, line):
