@@ -63,7 +63,6 @@
     var request = new XMLHttpRequest();
     request.open("DELETE", "/device/" + id + "/button/" + button_id + "/delete", false);
     request.send();
-    window.location.reload(true);
   }
 
   function deleteDevice(id) {
