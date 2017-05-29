@@ -68,8 +68,12 @@
   function deleteDevice(id) {
     var request = new XMLHttpRequest();
     request.open("DELETE", "/device/" + id + "/delete", false);
-    request.send();
-    window.location.reload(true);
+    try {
+      request.send();
+    }
+    finally {
+      window.location.reload(true);
+    }
   }
 
   function addButton(id) {
@@ -79,8 +83,12 @@
     new_button["id"] = Number(document.getElementById("new_button_id").value);
     new_button["name"] = document.getElementById("new_button_name").value;
     request.setRequestHeader('Content-Type', 'application/json');
-    request.send(JSON.stringify(new_button));
-    window.location.reload(true);
+    try {
+      request.send(new_button);
+    }
+    finally {
+      window.location.reload(true);
+    }
   }
 
   function createIrModal(name, id, sensors, buttons) {  
@@ -115,7 +123,7 @@
           unsafe_string += `<div class="pure-control-group ir_buttons">
             <label for="button_` + buttons[i]["id"] + `" style="width: 1.5em">` + buttons[i]["id"] + `</label>
             <input id="button_` + buttons[i]["id"] + `" name="button_` + buttons[i]["id"] + `" style="width: 15.6em;" type="text" value="` + buttons[i]["name"] + `" placeholder="Button Name">
-            <a href="#" class="pure-button pure-button-primary" style="background: rgb(202, 60, 60);" onclick="vex.dialog.confirm({message: 'Are you sure you want to delete button ` + buttons[i]["name"] + `?', callback: function (value) { try { if (value) { deleteButton(` + id + `, ` + buttons[i]["id"] + `); } } catch (e) { return false; }}})">Delete</a>
+            <a href="#" class="pure-button pure-button-primary" style="background: rgb(202, 60, 60);" onclick="vex.dialog.confirm({message: 'Are you sure you want to delete button ` + buttons[i]["name"] + `?', callback: function (value) { if (value) { deleteButton(` + id + `, ` + buttons[i]["id"] + `); }}}); return false;">Delete</a>
           </div>
           `;
       }
@@ -134,7 +142,7 @@
 
         <legend>Delete Device</legend>
         <div style="text-align: right;">
-          <a href="#" class="pure-button pure-button-primary" style="background: rgb(202, 60, 60);" onclick="vex.dialog.confirm({message: 'Are you sure you want to delete ` + name + `?', callback: function (value) { try { if (value) { deleteDevice(` + id + `); } } catch (e) { return false; } });">Remove Device</a>
+          <a href="#" class="pure-button pure-button-primary" style="background: rgb(202, 60, 60);" onclick="vex.dialog.confirm({message: 'Are you sure you want to delete ` + name + `?', callback: function (value) { try { if (value) { deleteDevice(` + id + `); } }}}); return false;">Remove Device</a>
         </div>
       </fieldset>
     </form>`;
