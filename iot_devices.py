@@ -46,6 +46,7 @@ def update_friendly_name(device_id, new_name):
 
 @iot_devices.route('/device/<int:device_id>/sensors/update', methods=['POST'])
 def update_sensors(device_id):
+    print request.data
     user_id = session.get('id')
     if user_id is None:
         flash('Please login.', 'warning')
@@ -67,6 +68,7 @@ def update_sensors(device_id):
         return redirect(url_for('.list_devices'), 303)
     
     sensor_data = request.get_json(silent=True)
+    print sensor_data
     if sensor_data is None:
         flash('Invalid Operation', 'error')
         return redirect(url_for('.list_devices'), 303)
