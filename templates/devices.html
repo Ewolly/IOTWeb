@@ -76,7 +76,8 @@
   function addButton(id) {
     var request = new XMLHttpRequest();
     request.open("POST", "/device/" + id + "/buttons/add", false);
-    var new_button = { document.getElementById('new_button_id').value: document.getElementById('new_button_name').value };
+    var new_button = {}
+     document.getElementById('new_button_id').value: document.getElementById('new_button_name').value };
     request.send(JSON.stringify(new_button));
     window.location.reload(true);
   }
@@ -155,7 +156,7 @@
               <span class="device-name">{{ module_names[device.module_type] }}</span>
             {% endif %}
             {% if device.module_type == 4 %}
-              <span class="device-status" onclick="vex.open({unsafeContent: createIrModal({{ device.friendly_name }}, {{ device.device_id }}, {{ device.sensors }}, {{ device.buttons }} });"><i class="fa fa-cog" aria-hidden="true"></i></span>
+              <span class="device-status" onclick="vex.open({unsafeContent: createIrModal(&quot;{{ device.friendly_name }}&quot;, {{ device.device_id }}, {{ device.sensors|tojson }}, {{ device.buttons|tojson }} }); return false;"><i class="fa fa-cog" aria-hidden="true"></i></span>
             {% endif %}
             <span class="device-status device-online">online</span>
             </div>
