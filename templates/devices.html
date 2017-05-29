@@ -10,7 +10,9 @@
     try {
       request.send();
     }
-    catch (e) {}
+    catch (e) {
+      console.log("done");
+    }
     finally {
       window.location.reload(true);
     }
@@ -35,7 +37,9 @@
     try {
       request.send(JSON.stringify(sensors));
     }
-    catch (e) {}
+    catch (e) {
+      console.log("done");
+    }
     finally {
       window.location.reload(true);
     }
@@ -135,6 +139,7 @@
     return unsafe_string;
   }
 </script>
+
   <h1>IoTBox Devices</h1>
     <div>
     {% if online_devices|length > 0 %}
