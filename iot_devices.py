@@ -3,6 +3,8 @@ from flask import request, url_for, render_template, session, flash, redirect
 import iot_db
 from datetime import datetime
 from devices import device_modules
+from iot_sockets import device_sockets
+
 
 iot_devices = Blueprint('iot_devices', __name__)
 
@@ -194,9 +196,6 @@ def delete_button(device_id, button_id):
 
 @iot_devices.route('/device/<int:device_id>/delete', methods=['DELETE'])
 def delete_device(device_id):
-    from iot_sockets import device_sockets
-    from iot_db import drop_from_db
-
     user_id = session.get('id')
     if user_id is None:
         flash('Please login.', 'warning')
@@ -215,11 +214,14 @@ def delete_device(device_id):
         return redirect(url_for('.list_devices'), 303)
 
     if device.device_id in device_sockets:
-            device_sockets[device.device_id].send_message({"server":"stop"})
+        device_sockets[device.device_id].send_message({"server":"stop"})
 
     ir_device = iot_db.Infrared.query.get(device_id)
     if ir_device is not None:
-        pass
-    pass
+        iot_db.drop_from_db(ir_device)
+
+    iot_db.drop_from_db(device)
+    iot_db.update_db()
+    return redirect(url_for('.list_devices'), 303)
 
 
