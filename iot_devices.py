@@ -120,7 +120,8 @@ def update_buttons(device_id):
 
     button_data = request.get_json(silent=True)
     if button_data is None:
-        return make_response(jsonify({'error': 'missing field: %s' % field}), 200)
+        flash('Invalid Operation', 'error')
+        return redirect(url_for('.list_devices'), 303)
     
     new_array = []
     for button_id, button_name in button_data.iteritems():
@@ -137,6 +138,7 @@ def update_buttons(device_id):
 
 @iot_devices.route('/device/<int:device_id>/buttons/add', methods=['POST'])
 def add_button(device_id):
+    print request.data
     user_id = session.get('id')
     if user_id is None:
         flash('Please login.', 'warning')
@@ -159,7 +161,8 @@ def add_button(device_id):
 
     button_update = request.get_json(silent=True)
     if button_update is None:
-        return make_response(jsonify({'error': 'missing field: %s' % field}), 200)
+        flash('Invalid Operation', 'error')
+        return redirect(url_for('.list_devices'), 303)
 
     for button_old in ir_device.buttons:
         if button_update["id"] == button_old["id"]:
