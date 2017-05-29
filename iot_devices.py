@@ -138,6 +138,7 @@ def update_buttons(device_id):
 
 @iot_devices.route('/device/<int:device_id>/buttons/add', methods=['POST'])
 def add_button(device_id):
+    print request.data
     user_id = session.get('id')
     if user_id is None:
         flash('Please login.', 'warning')
