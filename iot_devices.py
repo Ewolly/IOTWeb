@@ -66,7 +66,8 @@ def update_sensors(device_id):
     
     sensor_data = request.get_json(silent=True)
     if sensor_data is None:
-        return make_response(jsonify({'error': 'missing field: %s' % field}), 200)
+        flash('Invalid Operation', 'error')
+        return redirect(url_for('.list_devices'), 303)
     out_array = []
     for enabled, name in sensor_data:
         out_array.append({
@@ -190,3 +191,35 @@ def delete_button(device_id, button_id):
     ir_device.buttons = new_list
     iot_db.update_db()
     return redirect(url_for('.list_devices'), 303)
+
+@iot_devices.route('/device/<int:device_id>/delete', methods=['DELETE'])
+def delete_device(device_id):
+    from iot_sockets import device_sockets
+    from iot_db import drop_from_db
+
+    user_id = session.get('id')
+    if user_id is None:
+        flash('Please login.', 'warning')
+        return redirect(url_for('auth.login_request'), 303)
+    user = iot_db.Users.query.get(user_id)
+    if user is None:
+        flash('User does not exist.', 'error')
+        return redirect(url_for('auth.login_request'), 303)
+
+    device = iot_db.Devices.query.get(device_id)
+    if device is None:
+        flash('Device does not exist', 'warning')
+        return redirect(url_for('auth.login_request'), 303)
+    if device not in user.devices:
+        flash('Permission denied', 'error')
+        return redirect(url_for('.list_devices'), 303)
+
+    if device.device_id in device_sockets:
+            device_sockets[device.device_id].send_message({"server":"stop"})
+
+    ir_device = iot_db.Infrared.query.get(device_id)
+    if ir_device is not None:
+        pass
+    pass
+
+
