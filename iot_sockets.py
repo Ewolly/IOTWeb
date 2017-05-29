@@ -87,6 +87,8 @@ def server_stopped(device_id):
         device.local_ip = None
         device.local_port = None
         device.client_id = None
+        device.ip_address = None
+        device.port = None
         iot_db.update_db()
 
 class DeviceHandler(LineReceiver, TimeoutMixin):
@@ -128,6 +130,8 @@ class DeviceHandler(LineReceiver, TimeoutMixin):
                 device.local_ip = None
                 device.local_port = None
                 device.client_id = None
+                device.ip_address = None
+                device.port = None
                 iot_db.update_db()
             del self.devices[self.device_id]
 
