@@ -1,34 +1,137 @@
 {% extends "base.html" %}
 {% block title %}Devices{% endblock %}
 {% block content %}
-  <script type="text/javascript">
-    var ir_html = 
-    <div class="devices-list">
-      <input type="text" id="friendly_name" name="friendly_name" value = "friends">
-    </div>
-    <div class="pure-control-group">
-      <label for="Feedback1">Feedback Sensor 1:</label>
-      <input type="text" id="Sensor1" name="Sensor1">
-    </div>
-    <div class="pure-control-group">
-      <label for="Feedback2">Feedback Sensor 2:</label>
-      <input type="text" id="Sensor2" name="Sensor2">
-    </div>
-    <div class="pure-control-group">
-      <label for="Feedback3">Feedback Sensor 3:</label>
-      <input type="text" id="Sensor3" name="Sensor3">
-    </div>
-    <div class="pure-control-group">
-      <label for="Feedback4">Feedback Sensor 4:</label>
-      <input type="text" id="Sensor4" name="Sensor4">
-    </div>
-    <div class="pure-controls">
-      <button type="submit" class="pure-button pure-button-primary">Save</button>
-      <a href="insert link to the Confirm deletion pop up" class="pure-button">Remove Device</a>
-    </div>
+<script type="text/javascript">
+  function updateName(id) {
+    var name_element = document.getElementById('friendly_name');
 
+    var request = new XMLHttpRequest();
+    request.open('POST', '/device/' + id + '/name/' + name_element.value, false);
+    try {
+      request.send();
+    }
+    catch {}
+    finally {
+      window.location.reload(true);
+    }
+  }
 
-  </script>
+  function updateSensorEnabled(i) {
+    var sensor_element = document.getElementById('sensor_' + i);
+    sensor_element.disabled = !sensor_element.disabled;
+  }
+
+  function updateSensors(id) {
+    var name_element = document.getElementById('friendly_name')
+    var sensors = []
+    for (var i = 0; i < 4; i++)
+    {
+      var sensor_element = document.getElementById('sensor_' + i);
+      sensors.push([sensor_element.disabled, sensor_element.value]);
+    }
+    var request = new XMLHttpRequest();
+    request.open('POST', '/device/' + id + '/sensors/update', false);
+    request.setRequestHeader('Content-Type', 'application/json');
+    try {
+      request.send(JSON.stringify(sensors));
+    }
+    catch {}
+    finally {
+      window.location.reload(true);
+    }
+  }
+
+  function updateButtons(id) {
+    var button_elements = document.getElementsByClassName('ir_buttons')
+    var buttons = {}
+    for (var i = button_elements.length - 1; i >= 0; i--)
+    {
+      buttons[button_elements.item(i).childNodes[1].innerHTML] = button_elements.item(i).childNodes[3].value;
+    }
+    var request = new XMLHttpRequest();
+    request.open('POST', '/device/' + id + '/buttons/update', false);
+    request.setRequestHeader('Content-Type', 'application/json');
+    request.send(JSON.stringify(buttons));
+    window.location.reload(true);
+  }
+
+  function deleteButton(id, button_id) {
+    var request = new XMLHttpRequest();
+    request.open("DELETE", "/device/" + id + "/button/" + button_id + "/delete", false);
+    request.send();
+    window.location.reload(true);
+  }
+
+  function deleteDevice(id) {
+    var request = new XMLHttpRequest();
+    request.open("DELETE", "/device/" + id + "/delete", false);
+    request.send();
+    window.location.reload(true);
+  }
+
+  function addButton(id) {
+    var request = new XMLHttpRequest();
+    request.open("POST", "/device/" + id + "/buttons/add", false);
+    var new_button = { document.getElementById('new_button_id').value, document.getElementById('new_button_name').value };
+    request.send(JSON.stringify(new_button));
+    window.location.reload(true);
+  }
+
+  function createIrModal(name, id, sensors, buttons) {  
+    unsafe_string = `<form class="pure-form pure-form-aligned">
+        <fieldset>
+          <legend>` + name + `</legend>
+          <div class="devices-list pure-control-group">
+            <input type="text" id="friendly_name" name="friendly_name" placeholder="Device Name" style="width: 18em;">
+            <a class="pure-button pure-button-primary" href="#" onclick="updateName(` + id + `); return false;">Update</a>
+          </div>
+
+          <legend>Feedback Sensors</legend>
+          `;
+
+    for (var i = 0; i < 4; i++) {
+      unsafe_string += `<div class="pure-control-group">
+          <input id="cb" type="checkbox" onclick="updateSensorEnabled(` + i + `)"` + (sensors[i]["enabled"] ? ` checked="checked"` : ``) + `>
+          <label for="sensor_` + i + `" style="width: 4.5em">Sensor ` + i + `</label>
+          <input id="sensor_` + i + `" name="sensor_` + i + `" type="text" style="width: 16.78em;" placeholder="Sensor Name" value="` + ("name" in sensors[i] ? sensors[i]["name"] : ``) + `"` + (sensors[i]["enabled"] ? `` : ` disabled`) + `>
+        </div>`;
+    }
+    unsafe_string += `<div style="text-align: right;">
+          <a class="pure-button pure-button-primary" href="#" onclick="updateSensors(` + id + `); return false;">Update Feedback Sensors</a>
+        </div>
+
+        <legend>Buttons</legend>
+        `;
+
+    for (var i = 0; i < buttons.length; i++)
+    {
+        unsafe_string += `<div class="pure-control-group ir_buttons">
+          <label for="button_` + buttons[i]["id"] + `" style="width: 1.5em">` + buttons[i]["id"] + `</label>
+          <input id="button_` + buttons[i]["id"] + `" name="button_` + buttons[i]["id"] + `" style="width: 15.6em;" type="text" value="` + buttons[i]["name"] + `" placeholder="Button Name">
+          <a href="#" class="pure-button pure-button-primary" style="background: rgb(202, 60, 60);" onclick="vex.dialog.confirm({message: 'Are you sure you want to delete button ` + buttons[i]["name"] + `?', callback: function (value) { try { if (value) { deleteButton(` + id + `, ` + buttons[i]["id"] + `); } } catch (e) { return false; } }); return false;">Delete</a>
+        </div>
+        `;
+    }
+
+    unsafe_string += `<div style="text-align: right;">
+          <a class="pure-button pure-button-primary" href="#" onclick="updateButtons(` + id + `)">Update Button Names</a>
+        </div>
+        <br>
+        <div class="pure-control-group">
+          <input id="new_button_id" name="button_id" style="width:2.5em" placeholder="id">
+          <input id="new_button_name" name="button_name" type="text" style="width: 16.7em;" placeholder="button name">
+          <a class="pure-button pure-button-primary" href="#" onclick="addButton(` + id + `); return false;">Add</a>
+        </div>
+
+        <legend>Delete Device</legend>
+        <div style="text-align: right;">
+          <a href="#" class="pure-button pure-button-primary" style="background: rgb(202, 60, 60);" onclick="vex.dialog.confirm({message: 'Are you sure you want to delete ` + name + `?', callback: function (value) { try { if (value) { deleteButton(` + id + `, ` + buttons[i]["id"] + `); } } catch (e) { return false; } }); return false;">Remove Device</a>
+        </div>
+      </fieldset>
+    </form>`;
+    return unsafe_string;
+  }
+</script>
   <h1>IoTBox Devices</h1>
     <div>
     {% if online_devices|length > 0 %}
@@ -43,7 +146,8 @@
             {% else %}
               <span class="device-name">{{ module_names[device.module_type] }}</span>
             {% endif %}
-            <span href="#onlineModal" class="device-status" onclick="vex.dialog.alert('lets give this a go: {{ device.friendly_name }} is online')"><i class="fa fa-cog" aria-hidden="true"></i></span>
+            {% if device.module_type == 4 %}
+              <span class="device-status" onclick="vex.open({unsafeContent: createIrModal({{ device.friendly_name }}, {{ device.device_id }}, {{ device.sensors }}, {{ device.buttons }});"><i class="fa fa-cog" aria-hidden="true"></i></span>
             <span class="device-status device-online">online</span>
             </div>
           </li>

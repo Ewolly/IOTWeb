@@ -18,9 +18,23 @@ def list_devices():
     if user is None:
         flash('User does not exist.', 'error')
         return redirect(url_for('auth.login_request'), 303)
+
+    online_devices = []
+    offline_devices = []
+    for device in user.devices:
+        if device.ip_address is not None:
+            if device.module_type == 4:
+                ir_device = iot_db.Infrared.query.get(device.device_id)
+                device.sensors = ir_device.feedback
+                device.buttons = ir_device.buttons
+            online_devices.append(device)
+        else:
+            offline_devices.append(device)
+
+
     return render_template('devices.html', 
-        online_devices=[dev for dev in user.devices if dev.ip_address is not None],
-        offline_devices=[dev for dev in user.devices if dev.ip_address is None], 
+        online_devices=online_devices,
+        offline_devices=offline_devices, 
         module_names=[x.name for x in device_modules])
 
 @iot_devices.route('/device/<int:device_id>/name/<new_name>', methods=['POST'])
@@ -80,8 +94,6 @@ def update_sensors(device_id):
     ir_device.feedback = out_array
     iot_db.update_db()
     return redirect(url_for('.list_devices'), 303)
-
-
 
 @iot_devices.route('/device/<int:device_id>/buttons/update', methods=['POST'])
 def update_buttons(device_id):
