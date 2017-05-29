@@ -66,7 +66,7 @@
     new_button["id"] = Number(document.getElementById("new_button_id").value);
     new_button["name"] = document.getElementById("new_button_name").value;
     request.setRequestHeader('Content-Type', 'application/json');
-    request.send(new_button);
+    request.send(JSON.stringify(new_button));
     window.location.reload(true);
   }
 
@@ -127,6 +127,23 @@
     </form>`;
     return unsafe_string;
   }
+
+  function createModal(name, id) {  
+    unsafe_string = `<form class="pure-form pure-form-aligned">
+        <fieldset>
+          <legend>` + name + `</legend>
+          <div class="devices-list pure-control-group">
+            <input type="text" id="friendly_name" name="friendly_name" placeholder="Device Name" style="width: 18em;">
+            <a class="pure-button pure-button-primary" href="#" onclick="updateName(` + id + `);">Update</a>
+          </div>
+        <legend>Delete Device</legend>
+        <div style="text-align: right;">
+          <a href="#" class="pure-button pure-button-primary" style="background: rgb(202, 60, 60);" onclick="deleteDevice(` + id + `);">Remove Device</a>
+        </div>
+      </fieldset>
+    </form>`;
+    return unsafe_string;
+  }
 </script>
 
   <h1>IoTBox Devices</h1>
@@ -144,7 +161,9 @@
               <span class="device-name">{{ module_names[device.module_type] }}</span>
             {% endif %}
             {% if device.module_type == 4 %}
-              <span class="device-status" onclick="vex.open({unsafeContent: createIrModal(&quot;{{ device.friendly_name }}&quot;, {{ device.device_id }}, {{ device.sensors|tojson|forceescape }}, {{ device.buttons|tojson|forceescape }}) }); return false;"><i class="fa fa-cog" aria-hidden="true"></i></span>
+              <span class="device-status" onclick="vex.open({unsafeContent: createIrModal(&quot;{{ device.friendly_name }}&quot;, {{ device.device_id }}, {{ device.sensors|tojson|forceescape }}, {{ device.buttons|tojson|forceescape }}) });"><i class="fa fa-cog" aria-hidden="true"></i></span>
+            {% else %}
+              <span class="device-status" onclick="vex.open({unsafeContent: createModal(&quot;{{ device.friendly_name }}&quot;, {{ device.device_id }}) })"><i class="fa fa-cog" aria-hidden="true"></i></span>
             {% endif %}
             <span class="device-status device-online">online</span>
             </div>
@@ -164,8 +183,8 @@
             {% else %}
               <span class="device-name">{{ module_names[device.module_type] }}</span>
             {% endif %}
-            <span href="#offlineModal" class="device-status" onclick="vex.open({unsafeContent: '<iframe id=&quot;modal&quot; src=&quot;https://iot.duality.co.nz/&quot; style=&quot;width: 600px; height: 600px; margin: -10px; border: 0;&quot; scrolling=&quot;no&quot;></iframe>'})"><i class="fa fa-cog" aria-hidden="true"></i></span>
-            <span class="device-status device-offline">offline</span>
+              <span class="device-status" onclick="vex.open({unsafeContent: createModal(&quot;{{ device.friendly_name }}&quot;, {{ device.device_id }}) })"><i class="fa fa-cog" aria-hidden="true"></i></span>
+              <span class="device-status device-offline">offline</span>
             </div>
           </li>
         {% endfor %}
