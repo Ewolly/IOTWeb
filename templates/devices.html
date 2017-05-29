@@ -79,6 +79,7 @@
     var new_button = {};
     new_button["id"] = Number(document.getElementById("new_button_id").value);
     new_button["name"] = document.getElementById("new_button_name").value;
+    request.setRequestHeader('Content-Type', 'application/json');
     request.send(JSON.stringify(new_button));
     window.location.reload(true);
   }
