@@ -4,6 +4,7 @@ import iot_db
 from datetime import datetime
 from devices import device_modules
 from iot_sockets import device_sockets
+import copy
 
 
 iot_devices = Blueprint('iot_devices', __name__)
@@ -25,8 +26,8 @@ def list_devices():
         if device.ip_address is not None:
             if device.module_type == 4:
                 ir_device = iot_db.Infrared.query.get(device.device_id)
-                device.sensors = ir_device.feedback
-                device.buttons = ir_device.buttons
+                device.sensors = copy.deepcopy(ir_device.feedback)
+                device.buttons = copy.deepcopy(ir_device.buttons)
             online_devices.append(device)
         else:
             offline_devices.append(device)
