@@ -251,8 +251,11 @@ def disconnect_device(device_id):
     if device.connecting == 0 or device.client_id == None:
         device.client_id = None
         device.local_ip = None
-        device.port = None
+        device.local_port = None
         device.connecting = 0
+        device.ip_address = None
+        device.port = None
+        # need to move device to the  offline device efield
         iot_db.update_db()
         return make_response(jsonify({'status': 'success'}), 200)
 
