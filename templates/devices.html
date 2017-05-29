@@ -77,7 +77,7 @@
     var request = new XMLHttpRequest();
     request.open("POST", "/device/" + id + "/buttons/add", false);
     var new_button = {};
-    new_button["id"] = document.getElementById("new_button_id").value;
+    new_button["id"] = Number(document.getElementById("new_button_id").value);
     new_button["name"] = document.getElementById("new_button_name").value;
     request.send(JSON.stringify(new_button));
     window.location.reload(true);
@@ -184,7 +184,6 @@
         {% endfor %}
       </ul>
     {% endif %}
-
     {% if not (online_devices|length > 0 or offline_devices|length > 0) %}
       <h2>No associated devices.</h2>
     {% endif %}
