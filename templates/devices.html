@@ -2,11 +2,18 @@
 {% block title %}Devices{% endblock %}
 {% block content %}
 <script type="text/javascript">
+  function refresh() {
+      setTimeout(function () {
+        window.location.reload(true)
+      }, 3000);
+    }
+
   function updateName(id) {
     var name_element = document.getElementById('friendly_name');
 
     var request = new XMLHttpRequest();
     request.open('POST', '/device/' + id + '/name/' + name_element.value, false);
+    refresh();
     request.send();
     window.location.reload(true);
   }
@@ -27,6 +34,7 @@
     var request = new XMLHttpRequest();
     request.open('POST', '/device/' + id + '/sensors/update', false);
     request.setRequestHeader('Content-Type', 'application/json');
+    refresh();
     request.send(JSON.stringify(sensors));
     window.location.reload(true);
   }
@@ -41,6 +49,7 @@
     var request = new XMLHttpRequest();
     request.open('POST', '/device/' + id + '/buttons/update', false);
     request.setRequestHeader('Content-Type', 'application/json');
+    refresh();
     request.send(JSON.stringify(buttons));
     window.location.reload(true);
   }
@@ -48,6 +57,7 @@
   function deleteButton(id, button_id) {
     var request = new XMLHttpRequest();
     request.open("DELETE", "/device/" + id + "/button/" + button_id + "/delete", false);
+    refresh();
     request.send();
     window.location.reload(true);
   }
@@ -55,6 +65,7 @@
   function deleteDevice(id) {
     var request = new XMLHttpRequest();
     request.open("DELETE", "/device/" + id + "/delete", false);
+    refresh();
     request.send();
     window.location.reload(true);
   }
@@ -66,6 +77,7 @@
     new_button["id"] = Number(document.getElementById("new_button_id").value);
     new_button["name"] = document.getElementById("new_button_name").value;
     request.setRequestHeader('Content-Type', 'application/json');
+    refresh();
     request.send(JSON.stringify(new_button));
     window.location.reload(true);
   }
