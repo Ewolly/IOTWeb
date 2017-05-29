@@ -83,12 +83,7 @@
     new_button["id"] = Number(document.getElementById("new_button_id").value);
     new_button["name"] = document.getElementById("new_button_name").value;
     request.setRequestHeader('Content-Type', 'application/json');
-    try {
-      request.send(new_button);
-    }
-    finally {
-      window.location.reload(true);
-    }
+    request.send(new_button);
   }
 
   function createIrModal(name, id, sensors, buttons) {  
