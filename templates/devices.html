@@ -77,7 +77,7 @@
     var request = new XMLHttpRequest();
     request.open("POST", "/device/" + id + "/buttons/add", false);
     var new_button = {};
-    new_button[document.getElementById("new_button_id").value] = document.getElementById("new_button_name").value };
+    new_button[document.getElementById("new_button_id").value] = document.getElementById("new_button_name").value;
     request.send(JSON.stringify(new_button));
     window.location.reload(true);
   }
