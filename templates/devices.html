@@ -133,7 +133,7 @@
 
         <legend>Delete Device</legend>
         <div style="text-align: right;">
-          <a href="#" class="pure-button pure-button-primary" style="background: rgb(202, 60, 60);" onclick="vex.dialog.confirm({message: 'Are you sure you want to delete ` + name + `?', callback: function (value) { try { if (value) { deleteButton(` + id + `, ` + buttons[i]["id"] + `); } } catch (e) { return false; } }); return false;">Remove Device</a>
+          <a href="#" class="pure-button pure-button-primary" style="background: rgb(202, 60, 60);" onclick="vex.dialog.confirm({message: 'Are you sure you want to delete ` + name + `?', callback: function (value) { try { if (value) { deleteDevice(` + id + `); } } catch (e) { return false; } }); return false;">Remove Device</a>
         </div>
       </fieldset>
     </form>`;
