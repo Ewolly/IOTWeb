@@ -1,6 +1,7 @@
 from flask import Blueprint
 from flask import request, url_for, render_template, session, flash, redirect, jsonify
 import iot_db
+import json
 from datetime import datetime
 from devices import device_modules
 from iot_sockets import device_sockets
@@ -95,8 +96,8 @@ def update_sensors(device_id):
     ir_device.feedback = out_array
     iot_db.update_db()
     if device_id in device_sockets:
-        device_sockets[device_id].send_message({'feedback': jsonify(out_array)})
-        print jsonify(out_array)
+        device_sockets[device_id].send_message({'feedback': json.dumps(out_array)})
+        print json.dumps(out_array)
     return redirect(url_for('.list_devices'), 303)
 
 @iot_devices.route('/device/<int:device_id>/buttons/update', methods=['POST'])
