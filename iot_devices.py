@@ -96,6 +96,7 @@ def update_sensors(device_id):
     iot_db.update_db()
     if device_id in device_sockets:
         device_sockets[device_id].send_message({'feedback': jsonify(out_array)})
+        print jsonify(out_array)
     return redirect(url_for('.list_devices'), 303)
 
 @iot_devices.route('/device/<int:device_id>/buttons/update', methods=['POST'])
