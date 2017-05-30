@@ -1,5 +1,5 @@
 from flask import Blueprint
-from flask import request, url_for, render_template, session, flash, redirect
+from flask import request, url_for, render_template, session, flash, redirect, jsonify
 import iot_db
 from datetime import datetime
 from devices import device_modules
