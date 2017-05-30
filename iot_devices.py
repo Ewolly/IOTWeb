@@ -73,7 +73,7 @@ def update_sensors(device_id):
     if ir_device is None:
         flash('Device does not exist', 'warning')
         return redirect(url_for('auth.login_request'), 303)
-    for  dev in user.devices:   
+    for dev in user.devices:   
         if dev.device_id == device_id:
             break
     else:
@@ -94,6 +94,8 @@ def update_sensors(device_id):
             })
     ir_device.feedback = out_array
     iot_db.update_db()
+    if device_id in device_sockets:
+        device_sockets[device_id].send_message({'feedback': jsonify(out_array)})
     return redirect(url_for('.list_devices'), 303)
 
 @iot_devices.route('/device/<int:device_id>/buttons/update', methods=['POST'])
