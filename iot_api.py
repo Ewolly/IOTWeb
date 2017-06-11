@@ -29,7 +29,7 @@ def list_devices():
             'device_id': device.device_id,
             'friendly_name': device.friendly_name,
             'module_type': device.module_type,
-            'online': device.local_ip is not None,
+            'online': device.ip_address is not None,
             'url': url_for('.device_info', device_id = device.device_id, _external=True)
         })
     return make_response(jsonify(response), 200)
@@ -48,7 +48,7 @@ def device_details():
             'device_id': device.device_id,
             'friendly_name': device.friendly_name,
             'module_type': device.module_type,
-            'online': device.local_ip is not None,
+            'online': device.ip_address is not None,
             'first_connected': device.first_connected,
             'last_checked': device.last_checked,
             'client_id': device.client_id,
@@ -121,8 +121,7 @@ def register_device():
         iot_db.add_to_db(user)
         iot_db.update_db()
     new_device = iot_db.Devices(
-        user.user_id, device_data['module_type'], request.remote_addr,
-        request.environ.get('REMOTE_PORT'), 
+        user.user_id, device_data['module_type'],
         device_data.get('friendly_name'))
 
     iot_db.add_to_db(new_device)

@@ -72,12 +72,11 @@ class Devices(db.Model):
     local_ip = db.Column(pg.INET)
     local_port = db.Column(db.Integer)
 
-    def __init__(self, user_id, module_type, ip_address, port, 
-        friendly_name=None):
+    def __init__(self, user_id, module_type, friendly_name=None):
         self.user_id = user_id
         self.module_type = module_type
-        self.ip_address = ip_address
-        self.port = port
+        self.ip_address = None
+        self.port = None
         self.friendly_name = friendly_name
         self.plug_status = False
         self.first_connected = self.last_checked = datetime.utcnow()
