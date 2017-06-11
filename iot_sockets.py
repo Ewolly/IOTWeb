@@ -93,15 +93,15 @@ def server_stopped(device_id):
 
 def disconnect_device(device_id):
     from IOTApp import app
-        with app.app_context():
-            device = iot_db.Devices.query.get(device_id)
-            device.connecting = 0
-            device.local_ip = None
-            device.local_port = None
-            device.client_id = None
-            device.ip_address = None
-            device.port = None
-            iot_db.update_db()
+    with app.app_context():
+        device = iot_db.Devices.query.get(device_id)
+        device.connecting = 0
+        device.local_ip = None
+        device.local_port = None
+        device.client_id = None
+        device.ip_address = None
+        device.port = None
+        iot_db.update_db()
 
 class DeviceHandler(LineReceiver, TimeoutMixin):
     actions = {
