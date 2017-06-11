@@ -91,6 +91,18 @@ def server_stopped(device_id):
         device.port = None
         iot_db.update_db()
 
+def disconnect_device(device_id):
+    from IOTApp import app
+        with app.app_context():
+            device = iot_db.Devices.query.get(device_id)
+            device.connecting = 0
+            device.local_ip = None
+            device.local_port = None
+            device.client_id = None
+            device.ip_address = None
+            device.port = None
+            iot_db.update_db()
+
 class DeviceHandler(LineReceiver, TimeoutMixin):
     actions = {
         'keepalive': keepalive,
@@ -122,17 +134,7 @@ class DeviceHandler(LineReceiver, TimeoutMixin):
 
     def connectionLost(self, reason):
         if self.device_id in self.devices:
-            # TODO: disconnect device
-            from IOTApp import app
-            with app.app_context():
-                device = iot_db.Devices.query.get(self.device_id)
-                device.connecting = 0
-                device.local_ip = None
-                device.local_port = None
-                device.client_id = None
-                device.ip_address = None
-                device.port = None
-                iot_db.update_db()
+            disconnect_device(self.device_id)
             del self.devices[self.device_id]
 
 
@@ -147,7 +149,7 @@ class DeviceHandler(LineReceiver, TimeoutMixin):
     def timeoutConnection(self):
         if self.state != 'PROXY':
             self.sendLine(self.info('timed out'))
-            self.transport.loseConnection()
+            self.transport.abortConnection()
         else:
             self.transport.abortConnection()
     
