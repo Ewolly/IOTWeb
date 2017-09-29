@@ -18,6 +18,7 @@ device_sockets = {}
 # device actions
 # --------------
 def keepalive(device_id, current_consumption=None):
+    print "kept-alive"
     from IOTApp import app
     with app.app_context():
         device = iot_db.Devices.query.get(device_id)
@@ -139,6 +140,7 @@ class DeviceHandler(LineReceiver, TimeoutMixin):
 
 
     def lineReceived(self, line):
+        print "recv:", line
         if self.state == 'PROXY':
             self.handle_PROXY(line)
         elif self.state == 'AUTH':
@@ -147,6 +149,7 @@ class DeviceHandler(LineReceiver, TimeoutMixin):
             self.handle_MESSAGE(line)
 
     def timeoutConnection(self):
+        print "timed out connection"
         if self.state != 'PROXY':
             self.sendLine(self.info('timed out'))
             self.transport.abortConnection()
