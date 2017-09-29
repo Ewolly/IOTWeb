@@ -17,24 +17,23 @@ device_sockets = {}
 # --------------
 # device actions
 # --------------
-def keepalive(device_id, current_consumption=None):
+def keepalive(device_id, current_consumption=None, device_type=None):
     from IOTApp import app
     with app.app_context():
         device = iot_db.Devices.query.get(device_id)
-        if current_consumption != None:
+        if current_consumption is not None:
             device.current_consumption = current_consumption
             iot_db.update_db()
+        if device_type is not None:
+            device.module_type = device_type
+            if device_type == 4 and iot_db.Infrared.query.get(device_id) is None:
+                iot_db.add_to_db(iot_db.Infrared(device_id))
+            iot_db.update_db()
     return False, {'info': 'kept alive'}
-
 
 # closes the connection safely
 def disconnect(device_id):
     return True, {'info': 'connection closed (disconnect)'}
-
-# returns the text sent in uppercase
-# TODO: remove, for debugging
-def echo_text(device_id, text):
-    return False, {'echo': str(text).upper()}
 
 # ----------------
 # device responses
@@ -107,7 +106,6 @@ class DeviceHandler(LineReceiver, TimeoutMixin):
     actions = {
         'keepalive': keepalive,
         'disconnect': disconnect,
-        'echo': echo_text,
     }
 
     responses = {
@@ -191,7 +189,8 @@ class DeviceHandler(LineReceiver, TimeoutMixin):
 
         self.device_id = message.get('id')
         device_token = message.get('token')
-        if self.device_id is None or device_token is None:
+        device_type = message.get('device_type')
+        if self.device_id is None or device_token is None or device_type is None:
             self.sendLine(self.err('request must have id and token'))
             self.transport.loseConnection()
             return
@@ -204,7 +203,7 @@ class DeviceHandler(LineReceiver, TimeoutMixin):
             except Exception as e:
                 self.sendLine(self.err(str(e)))
                 self.transport.loseConnection()
-                return                
+                return
             if device is None:
                 self.sendLine(self.err('invalid device id'))
                 self.transport.loseConnection()
@@ -213,7 +212,9 @@ class DeviceHandler(LineReceiver, TimeoutMixin):
                 self.sendLine(self.err('invalid device token'))
                 self.transport.loseConnection()
                 return
-
+            device.module_type = device_type
+            if (device_type == 4 and iot_db.Infrared.query.get(device_id) is None)
+                iot_db.add_to_db(iot_db.Infrared(device_id))
             device.last_checked = datetime.utcnow()
             device.ip_address = self.client_ip
             device.port = self.client_port
@@ -268,7 +269,7 @@ class DeviceHandler(LineReceiver, TimeoutMixin):
                 self.sendLine(json.dumps(resp))
             if end_con:
                 self.transport.loseConnection()
-                return 
+                return
         except Exception as e:
             # write the message of any error out and disconnect
             # TODO: remove, for debugging
