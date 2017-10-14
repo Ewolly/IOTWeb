@@ -42,8 +42,9 @@ class Infrared(Smartplug):
                     "cmd": command,
                     "data": button_id,
                     "len": 1
-            })
+            }})
     
+    @staticmethod
     def learn_button(device_id, button_id):
         if device_id not in device_sockets:
             return
@@ -52,11 +53,12 @@ class Infrared(Smartplug):
             "spi": {
                 "cmd": 0x82,
                 "data": button_id,
-                "len": 1
+                "len": 1,
                 "resp_cmd": 0x02,
             }
         })
 
+    @staticmethod
     def change_mode(device_id, repeater):
         if device_id not in device_sockets:
             return
@@ -69,6 +71,7 @@ class Infrared(Smartplug):
             }
         })
 
+    @staticmethod
     def set_channel(device_id, channels):
         if device_id not in device_sockets:
             return
@@ -81,7 +84,8 @@ class Infrared(Smartplug):
             }
         })
     
-    def read_feedback(device_id, channels):
+    @staticmethod
+    def read_feedback(device_id):
         if device_id not in device_sockets:
             return
 
