@@ -28,7 +28,7 @@ class Infrared(Smartplug):
 
         if action == "start":
             command = 0x85
-        else if action == "single":
+        elif action == "single":
             command = 0x84
         
         if action == "stop":
