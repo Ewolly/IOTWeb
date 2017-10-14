@@ -86,7 +86,7 @@ def spi(device_id, command, response):
                         "name": ir_dev.feedback[i].get("name")
                     })
                 ir_dev.feedback = newlist
-            else if command == 0x02:
+            elif command == 0x02:
                 ir_dev.learning = response & 0x01
         iot_db.update_db()
         
