@@ -27,6 +27,7 @@ def list_devices():
                 ir_device = iot_db.Infrared.query.get(device.device_id)
                 device.sensors = copy.deepcopy(ir_device.feedback)
                 device.buttons = copy.deepcopy(ir_device.buttons)
+                device.learning = ir_device.learning
             online_devices.append(device)
         else:
             offline_devices.append(device)
@@ -171,7 +172,7 @@ def learn_button(device_id, button_id):
         return redirect(url_for('.list_devices'), 303)
 
     device_modules[4].learn_button(device_id, button_id)
-    ir_device.learning = True
+    ir_device.learning = button_id
     iot_db.update_db()
     if button.get('name') is not None:
         flash("learning button '" + button['name'] + "'...", 'info')
