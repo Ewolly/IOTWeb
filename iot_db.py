@@ -87,7 +87,7 @@ class Infrared(db.Model):
     buttons = db.Column(db.JSON)
     feedback = db.Column(db.JSON)
     repeater = db.Column(db.Boolean)
-    learning = db.Column(db.Boolean)
+    learning = db.Column(db.Integer)
 
     def __init__(self, device_id):
         self.device_id = device_id
@@ -97,7 +97,7 @@ class Infrared(db.Model):
             {'enabled': False},
             {'enabled': False},
         ]
-        self.repeater = False
+        self.learning = -1
 
 def add_to_db(db_object):
     db.session.add(db_object)

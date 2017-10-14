@@ -31,7 +31,6 @@ def list_devices():
         else:
             offline_devices.append(device)
 
-
     return render_template('devices.html', 
         online_devices=online_devices,
         offline_devices=offline_devices, 
@@ -131,7 +130,8 @@ def update_buttons(device_id):
             "id" : int(button_id),
             "name": button_name,
             "continuous" : False,
-            "pulses" : 2
+            "pulses" : 2,
+            "learnt": False
             })
 
     ir_device.buttons = new_array
@@ -161,8 +161,10 @@ def learn_button(device_id, button_id):
         flash('Permission denied', 'error')
         return redirect(url_for('.list_devices'), 303)
 
-    for button in ir_device.buttons:
-        if button['id'] == button_id:
+    button = None
+    for b in ir_device.buttons:
+        if b['id'] == button_id:
+            button = b
             break
     else:
         flash('button does not exist', 'error')
@@ -171,6 +173,11 @@ def learn_button(device_id, button_id):
     device_modules[4].learn_button(device_id, button_id)
     ir_device.learning = True
     iot_db.update_db()
+    if button.get('name') is not None:
+        flash("learning button '" + button['name'] + "'...", 'info')
+    else:
+        flash("learning button with id '" + str(button["id"]) + "'...", 'info')
+
     return redirect(url_for('.list_devices'), 303)
 
 @iot_devices.route('/device/<int:device_id>/buttons/add', methods=['POST'])
@@ -213,7 +220,8 @@ def add_button(device_id):
         "id" : int(button_update["id"]),
         "name": button_update["name"],
         "continuous" : False,
-        "pulses" : 2
+        "pulses" : 2,
+        "learnt": button_update["learnt"]
         })
     ir_device.buttons = new_but
     iot_db.update_db()

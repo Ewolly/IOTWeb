@@ -7,6 +7,7 @@ from twisted.internet import reactor
 from datetime import datetime
 import threading
 import json
+from flask import flash
 
 import iot_db
 # from devices.smartplug import Smartplug
@@ -87,7 +88,15 @@ def spi(device_id, command, response):
                     })
                 ir_dev.feedback = newlist
             elif command == 0x02:
-                ir_dev.learning = response & 0x01
+                if response == 0:
+                    flash('button learnt!', 'info')
+                    ir_dev.learnt = True
+                elif response == 1:
+                    flash('button learn failed', 'error')
+                elif response == 2:
+                    flash('button learn timed out', 'error')
+                
+                ir_dev.learning = -1
         iot_db.update_db()
         
 def server_setup(device_id, ip, port):

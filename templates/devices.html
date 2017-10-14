@@ -90,7 +90,7 @@
     window.location.reload(true);
   }
 
-  function createIrModal(name, id, sensors, buttons) {  
+  function createIrModal(name, id, sensors, buttons, learning) {  
     unsafe_string = `<form class="pure-form pure-form-aligned">
         <fieldset>
           <legend>` + name + `</legend>
@@ -121,8 +121,8 @@
       {
           unsafe_string += `<div class="pure-control-group ir_buttons">
             <label for="button_` + buttons[i]["id"] + `" style="width: 1.5em">` + buttons[i]["id"] + `</label>
-            <input id="button_` + buttons[i]["id"] + `" name="button_` + buttons[i]["id"] + `" style="width: 15.6em;" type="text" value="` + buttons[i]["name"] + `" placeholder="Button Name">
-            <a href="#" class="pure-button pure-button-primary" onclick="learnButton(` + id + `, ` + buttons[i]["id"] + `);">Learn</a>
+            <input id="button_` + buttons[i]["id"] + `" name="button_` + buttons[i]["id"] + `" style="width: 10em;" type="text" value="` + buttons[i]["name"] + `" placeholder="Button Name">
+            <a href="#" class="pure-button pure-button-primary` + learning ? `pure-button-disabled` : `` +`" onclick="learnButton(` + id + `, ` + buttons[i]["id"] + `);">` + learning == button_id ? `<i class="fa fa-refresh" aria-hidden="true">` : (buttons[i]["learnt"] ? `Re-Learn` : `Learn`) + `</a>
             <a href="#" class="pure-button pure-button-primary" style="background: rgb(202, 60, 60);" onclick="deleteButton(` + id + `, ` + buttons[i]["id"] + `);">Delete</a>
           </div>
           `;
@@ -182,7 +182,7 @@
               <span class="device-name">{{ module_names[device.module_type] }}</span>
             {% endif %}
             {% if device.module_type == 4 %}
-              <span class="device-status" onclick="vex.open({unsafeContent: createIrModal(&quot;{{ device.friendly_name }}&quot;, {{ device.device_id }}, {{ device.sensors|tojson|forceescape }}, {{ device.buttons|tojson|forceescape }}) });"><i class="fa fa-cog" aria-hidden="true"></i></span>
+              <span class="device-status" onclick="vex.open({unsafeContent: createIrModal(&quot;{{ device.friendly_name }}&quot;, {{ device.device_id }}, {{ device.sensors|tojson|forceescape }}, {{ device.buttons|tojson|forceescape }}), {{ device.learning }} });"><i class="fa fa-cog" aria-hidden="true"></i></span>
             {% else %}
               <span class="device-status" onclick="vex.open({unsafeContent: createModal(&quot;{{ device.friendly_name }}&quot;, {{ device.device_id }}) })"><i class="fa fa-cog" aria-hidden="true"></i></span>
             {% endif %}
