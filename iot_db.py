@@ -88,6 +88,7 @@ class Infrared(db.Model):
     buttons = db.Column(db.JSON)
     feedback = db.Column(db.JSON)
     repeater = db.Column(db.Boolean)
+    learning = db.Column(db.Boolean)
 
     def __init__(self, device_id):
         self.device_id = device_id

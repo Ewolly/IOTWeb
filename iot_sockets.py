@@ -69,6 +69,27 @@ def infrared(device_id, feedback):
         ir_dev.feedback = newlist
         iot_db.update_db()
 
+def spi(device_id, command, response):
+    from IOTApp import app
+    with app.app_context():
+        device = iot_db.Devices.query.get(device_id)
+        # infrared
+        if device.module_type == 4:
+            ir_dev = iot_db.Infrared.query.get(device_id)
+            # feedback
+            if command == 0x03:
+                newlist = []
+                for i in range(4):
+                    newlist.append({
+                        "enabled": ir_dev.feedback[i]["enabled"], 
+                        "input": response & (1 << (i+1)) > 0,
+                        "name": ir_dev.feedback[i].get("name")
+                    })
+                ir_dev.feedback = newlist
+            else if command == 0x02:
+                ir_dev.learning = response & 0x01
+        iot_db.update_db()
+        
 def server_setup(device_id, ip, port):
     from IOTApp import app
     with app.app_context():
@@ -112,6 +133,7 @@ class DeviceHandler(LineReceiver, TimeoutMixin):
         'power_state': power_state,
         'power': power_resp,
         'infrared': infrared,
+        'spi': spi,
         'server_setup': server_setup,
         'server_stopped': server_stopped
     }
