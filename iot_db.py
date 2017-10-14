@@ -1,5 +1,5 @@
 from __future__ import print_function
-from flask import Flask
+# from flask import Flask
 from flask_sqlalchemy import SQLAlchemy
 # http://docs.sqlalchemy.org/en/rel_0_9/dialects/postgresql.html
 from sqlalchemy import func
@@ -7,7 +7,6 @@ from sqlalchemy.dialects import postgresql as pg
 from datetime import datetime
 from hashlib import sha512
 from uuid import uuid4
-import json
 
 db = SQLAlchemy()
 

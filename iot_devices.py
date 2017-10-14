@@ -1,12 +1,10 @@
 from flask import Blueprint
-from flask import request, url_for, render_template, session, flash, redirect, jsonify
+from flask import request, url_for, render_template, session, flash, redirect
 import iot_db
 import json
-from datetime import datetime
 from devices import device_modules
 from iot_sockets import device_sockets
 import copy
-
 
 iot_devices = Blueprint('iot_devices', __name__)
 
@@ -140,6 +138,41 @@ def update_buttons(device_id):
     iot_db.update_db()
     return redirect(url_for('.list_devices'), 303)
 
+@iot_devices.route('/device/<int:device_id>/button/<int:button_id>/learn', methods=['POST'])
+def learn_button(device_id, button_id):
+    user_id = session.get('id')
+    if user_id is None:
+        flash('Please login.', 'warning')
+        return redirect(url_for('auth.login_request'), 303)
+    user = iot_db.Users.query.get(user_id)
+    if user is None:
+        flash('User does not exist.', 'error')
+        return redirect(url_for('auth.login_request'), 303)
+    
+    ir_device = iot_db.Infrared.query.get(device_id)
+    if ir_device is None:
+        flash('Device does not exist', 'warning')
+        return redirect(url_for('auth.login_request'), 303)
+    
+    for dev in user.devices:   
+        if dev.device_id == device_id:
+            break
+    else:
+        flash('Permission denied', 'error')
+        return redirect(url_for('.list_devices'), 303)
+
+    for button in ir_device.buttons:
+        if button['id'] == button_id:
+            break
+    else:
+        flash('button does not exist', 'error')
+        return redirect(url_for('.list_devices'), 303)
+
+    device_modules[4].learn_button(device_id, button_id)
+    ir_device.learning = True
+    iot_db.update_db()
+    return redirect(url_for('.list_devices'), 303)
+
 @iot_devices.route('/device/<int:device_id>/buttons/add', methods=['POST'])
 def add_button(device_id):
     print request.data
@@ -243,5 +276,3 @@ def delete_device(device_id):
     iot_db.drop_from_db(device)
     iot_db.update_db()
     return redirect(url_for('.list_devices'), 303)
-
-

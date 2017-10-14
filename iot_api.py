@@ -1,7 +1,5 @@
 from flask import Blueprint
 from flask import make_response, jsonify, request, url_for
-from functools import wraps
-from collections import namedtuple
 import iot_db
 from datetime import datetime
 from devices import device_modules
@@ -74,7 +72,7 @@ def enumerate_devices():
 
 @iot_api.route('/device/<int:device_id>/info', methods=['GET'])
 def device_info(device_id):
-    user, device, err_msg = check_device(
+    _, device, err_msg = check_device(
         request.headers.get('email'), 
         request.headers.get('password'),
         device_id)
@@ -96,7 +94,7 @@ def device_info(device_id):
         details = device_modules[4].device_details(device,
             iot_db.Infrared.query.get(device.device_id))
     else:
-        details = device_modules[device.module_type].device_details(device);
+        details = device_modules[device.module_type].device_details(device)
     response.update(details)
     return make_response(jsonify(response), 200)
 
@@ -210,14 +208,14 @@ def connect_device(device_id):
     iot_db.update_db()
     device.client_id = client.client_id 
 
-    device_modules[device.module_type].start_server(device, device_modules[device.module_type].name);
+    device_modules[device.module_type].start_server(device, device_modules[device.module_type].name)
     iot_db.update_db()
 
     return make_response(jsonify({'status': 'success', 'client_id': client.client_id}), 200)
 
 @iot_api.route('/device/<int:device_id>/connect/status', methods=['GET'])
 def connect_status(device_id):
-    user, device, err_msg = check_device(
+    _, device, err_msg = check_device(
         request.headers.get('email'), 
         request.headers.get('password'),
         device_id)
@@ -240,7 +238,7 @@ def connect_status(device_id):
 
 @iot_api.route('/device/<int:device_id>/disconnect', methods=['DELETE'])
 def disconnect_device(device_id):
-    user, device, err_msg = check_device(
+    _, device, err_msg = check_device(
     request.headers.get('email'), 
     request.headers.get('password'),
     device_id)
@@ -272,7 +270,7 @@ def update_device():
 @iot_api.route('/device/<int:device_id>/power/<any("on", "off"):state>', 
     methods=['POST'])
 def power_device(device_id, state):
-    user, device, err_msg = check_device(
+    _, device, err_msg = check_device(
         request.headers.get('email'), 
         request.headers.get('password'),
         device_id)
@@ -291,14 +289,14 @@ def power_device(device_id, state):
 @iot_api.route('/device/<int:device_id>/repeater/<any("on", "off"):state>', 
     methods=['POST'])
 def ir_repeater(device_id, state):
-    user, device, err_msg = check_device(
-        request.headers.get('email'), 
+    _, _, err_msg = check_device(
+        request.headers.get('email'),
         request.headers.get('password'),
         device_id,
         4)
     if err_msg is not None:
         return make_response(jsonify({'error': err_msg}), 400)
-    
+
     ir_device = iot_db.Infrared.query.get(device_id)
     ir_device.repeater = state == "on"
     iot_db.update_db()
@@ -307,8 +305,8 @@ def ir_repeater(device_id, state):
 @iot_api.route('/device/<int:device_id>/ir/<int:button_id>/' + 
     '<any("start", "stop", "single"):state>', methods=['PUT'])
 def ir_button_state(device_id, button_id, state):
-    user, device, err_msg = check_device(
-        request.headers.get('email'), 
+    _, device, err_msg = check_device(
+        request.headers.get('email'),
         request.headers.get('password'),
         device_id,
         4)

@@ -8,8 +8,7 @@ This is part of a systems programming project by the same team.
 
 Setup
 -----
-Ensure you have Python 2.7, pip, and virtualenv installed. (should work with
-Python 3.x, untested)
+Make sure you have Python 2.7, pip, and virtualenv installed.
 
 1. 	Clone this repo onto your machine.
 2. 	Create a virtualenv `venv` for the server, and activate it.

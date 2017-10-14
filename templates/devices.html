@@ -54,6 +54,14 @@
     window.location.reload(true);
   }
 
+  function learnButton(id, button_id) {
+    var request = new XMLHttpRequest();
+    request.open("POST", "/device/" + id + "/button/" + button_id + "/learn", false);
+    refresh();
+    request.send();
+    window.location.reload(true);
+  }
+
   function deleteButton(id, button_id) {
     var request = new XMLHttpRequest();
     request.open("DELETE", "/device/" + id + "/button/" + button_id + "/delete", false);
@@ -114,6 +122,7 @@
           unsafe_string += `<div class="pure-control-group ir_buttons">
             <label for="button_` + buttons[i]["id"] + `" style="width: 1.5em">` + buttons[i]["id"] + `</label>
             <input id="button_` + buttons[i]["id"] + `" name="button_` + buttons[i]["id"] + `" style="width: 15.6em;" type="text" value="` + buttons[i]["name"] + `" placeholder="Button Name">
+            <a href="#" class="pure-button pure-button-primary" onclick="learnButton(` + id + `, ` + buttons[i]["id"] + `);">Learn</a>
             <a href="#" class="pure-button pure-button-primary" style="background: rgb(202, 60, 60);" onclick="deleteButton(` + id + `, ` + buttons[i]["id"] + `);">Delete</a>
           </div>
           `;
