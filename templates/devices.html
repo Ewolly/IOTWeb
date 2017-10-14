@@ -182,7 +182,7 @@
               <span class="device-name">{{ module_names[device.module_type] }}</span>
             {% endif %}
             {% if device.module_type == 4 %}
-              <span class="device-status" onclick="vex.open({unsafeContent: createIrModal(&quot;{{ device.friendly_name }}&quot;, {{ device.device_id }}, {{ device.sensors|tojson|forceescape }}, {{ device.buttons|tojson|forceescape }}, {{ device.learning }} });"><i class="fa fa-cog" aria-hidden="true"></i></span>
+              <span class="device-status" onclick="vex.open({unsafeContent: createIrModal(&quot;{{ device.friendly_name }}&quot;, {{ device.device_id }}, {{ device.sensors|tojson|forceescape }}, {{ device.buttons|tojson|forceescape }}, {{ device.learning }} )});"><i class="fa fa-cog" aria-hidden="true"></i></span>
             {% else %}
               <span class="device-status" onclick="vex.open({unsafeContent: createModal(&quot;{{ device.friendly_name }}&quot;, {{ device.device_id }}) })"><i class="fa fa-cog" aria-hidden="true"></i></span>
             {% endif %}
