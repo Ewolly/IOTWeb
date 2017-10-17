@@ -98,6 +98,7 @@ class Infrared(db.Model):
             {'enabled': False},
         ]
         self.learning = -1
+        self.repeater = False
 
 def add_to_db(db_object):
     db.session.add(db_object)
