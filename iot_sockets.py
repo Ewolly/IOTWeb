@@ -246,8 +246,8 @@ class DeviceHandler(LineReceiver, TimeoutMixin):
                 self.transport.loseConnection()
                 return
             device.module_type = device_type
-            if device_type == 4 and iot_db.Infrared.query.get(device_id) is None:
-                iot_db.add_to_db(iot_db.Infrared(device_id))
+            if device_type == 4 and iot_db.Infrared.query.get(self.device_id) is None:
+                iot_db.add_to_db(iot_db.Infrared(self.device_id))
             device.last_checked = datetime.utcnow()
             device.ip_address = self.client_ip
             device.port = self.client_port
