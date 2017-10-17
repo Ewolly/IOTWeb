@@ -222,7 +222,7 @@ def add_button(device_id):
         "name": button_update["name"],
         "continuous" : False,
         "pulses" : 2,
-        "learnt": button_update["learnt"]
+        "learnt": False
         })
     ir_device.buttons = new_but
     iot_db.update_db()
