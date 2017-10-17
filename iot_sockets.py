@@ -89,13 +89,7 @@ def spi(device_id, command, response):
                 ir_dev.feedback = newlist
             elif command == 0x02:
                 if response == 0:
-                    flash('button learnt!', 'info')
                     ir_dev.learnt = True
-                elif response == 1:
-                    flash('button learn failed', 'error')
-                elif response == 2:
-                    flash('button learn timed out', 'error')
-                
                 ir_dev.learning = -1
         iot_db.update_db()
         

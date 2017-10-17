@@ -223,7 +223,7 @@ def add_button(device_id):
         "continuous" : False,
         "pulses" : 2,
         "learnt": False
-        })
+    })
     ir_device.buttons = new_but
     iot_db.update_db()
     return redirect(url_for('.list_devices'), 303)
